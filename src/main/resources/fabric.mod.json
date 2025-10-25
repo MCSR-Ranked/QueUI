@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "queui",
+  "version": "${version}",
+  "name": "QueUI",
+  "description": "The GUI build helper library for 1.16.1, speedrunning mods",
+  "authors": [
+    "RedLime"
+  ],
+  "contact": {
+
+  },
+  "license": "GPL-3.0",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.mcsrranked.queui.QueUI"
+    ]
+  },
+  "mixins": [
+    "queui.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_version}"
+  }
+}
