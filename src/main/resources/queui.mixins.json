@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "render.MixinGameRenderer"
+    "render.MixinGameRenderer",
+    "test.MixinTitleScreen"
   ],
   "injectors": {
     "defaultRequire": 1
