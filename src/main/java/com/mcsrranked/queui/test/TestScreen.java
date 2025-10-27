@@ -97,6 +97,47 @@ public class TestScreen extends QueUIScreen {
                 })
                 .setText(new LiteralText("TEST"))
         );
+
+        this.addButton(new QueUIButtonWidget(10, 140, 60, 30)
+                .setContentAlignment(AlignmentDirection.LEFT, 4)
+                .setIconDimension(16, 16)
+                .setIconRenderer((button, matrices, mouseX, mouseY) -> {
+                    assert this.client != null;
+                    this.client.getItemRenderer().renderGuiItemIcon(new ItemStack(Items.ENDER_EYE), 0, 0);
+                })
+        );
+        this.addButton(new QueUIButtonWidget(80, 140, 60, 30)
+                .setContentAlignment(AlignmentDirection.CENTER, 4)
+                .setIconDimension(16, 16)
+                .setIconRenderer((button, matrices, mouseX, mouseY) -> {
+                    assert this.client != null;
+                    this.client.getItemRenderer().renderGuiItemIcon(new ItemStack(Items.ENDER_EYE), 0, 0);
+                })
+        );
+        this.addButton(new QueUIButtonWidget(150, 140, 60, 30)
+                .setContentAlignment(AlignmentDirection.RIGHT, 4)
+                .setIconDimension(16, 16)
+                .setIconRenderer((button, matrices, mouseX, mouseY) -> {
+                    assert this.client != null;
+                    this.client.getItemRenderer().renderGuiItemIcon(new ItemStack(Items.ENDER_EYE), 0, 0);
+                })
+        );
+        this.addButton(new QueUIButtonWidget(220, 140, 60, 30)
+                .setContentAlignment(AlignmentDirection.TOP, 4)
+                .setIconDimension(16, 16)
+                .setIconRenderer((button, matrices, mouseX, mouseY) -> {
+                    assert this.client != null;
+                    this.client.getItemRenderer().renderGuiItemIcon(new ItemStack(Items.ENDER_EYE), 0, 0);
+                })
+        );
+        this.addButton(new QueUIButtonWidget(290, 140, 60, 30)
+                .setContentAlignment(AlignmentDirection.BOTTOM, 4)
+                .setIconDimension(16, 16)
+                .setIconRenderer((button, matrices, mouseX, mouseY) -> {
+                    assert this.client != null;
+                    this.client.getItemRenderer().renderGuiItemIcon(new ItemStack(Items.ENDER_EYE), 0, 0);
+                })
+        );
     }
 
     @Override

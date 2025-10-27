@@ -43,6 +43,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
 
     public QueUIButtonWidget setText(Supplier<Text> textSupplier) {
         this.textUpdater = textSupplier;
+        this.updateMessage();
         return this;
     }
 
@@ -108,7 +109,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
     }
 
     public void updateMessage() {
-        this.setMessage(this.textUpdater.get());
+        if (this.textUpdater != null) this.setMessage(this.textUpdater.get());
     }
 
     public void setMessageColor(int color) {
@@ -160,7 +161,6 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
 
-        this.updateMessage();
         Text text = this.getMessage();
         int textWidth = textRenderer.getWidth(text);
         Runnable renderText = () -> this.drawTextWithShadow(matrices, textRenderer, text, 0, 0, textColor | MathHelper.ceil(this.alpha * 255.0f) << 24);
