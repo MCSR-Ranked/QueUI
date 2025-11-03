@@ -51,6 +51,14 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         return this.setText(() -> text);
     }
 
+    public QueUIButtonWidget setTextAsString(Supplier<String> text) {
+        return this.setText(() -> new LiteralText(text.get()));
+    }
+
+    public QueUIButtonWidget setText(String text) {
+        return this.setText(new LiteralText(text));
+    }
+
     public QueUIButtonWidget setIconRenderer(RenderSupplier renderer) {
         this.iconRenderer = renderer;
         return this;
