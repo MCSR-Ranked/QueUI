@@ -6,6 +6,8 @@
   "mixins": [
   ],
   "client": [
+    "MixinMinecraftClient",
+    "gl.MixinFramebuffer",
     "render.MixinGameRenderer",
     "test.MixinTitleScreen"
   ],
