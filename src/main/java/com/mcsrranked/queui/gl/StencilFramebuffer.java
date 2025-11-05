@@ -11,9 +11,17 @@ public class StencilFramebuffer {
     public static @NotNull Framebuffer INSTANCE = null;
     public static boolean IS_INITIALIZING = false;
 
+    @SuppressWarnings("ConstantValue")
     public static void init(int width, int height) {
+        IS_INITIALIZING = true;
+        if (INSTANCE != null) INSTANCE.delete();
         INSTANCE = new Framebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
         INSTANCE.checkFramebufferStatus();
+        IS_INITIALIZING = false;
+    }
+
+    public static void resize(int width, int height) {
+        init(width, height);
     }
 
     public static void begin() {
@@ -28,6 +36,7 @@ public class StencilFramebuffer {
         RenderSystem.defaultBlendFunc();
     }
 
+    @SuppressWarnings("deprecation")
     public static void end() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         INSTANCE.endWrite();
@@ -41,6 +50,12 @@ public class StencilFramebuffer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
-        INSTANCE.draw(fbw, fbh, MinecraftClient.IS_SYSTEM_MAC);
+        RenderSystem.matrixMode(GL11.GL_PROJECTION);
+        RenderSystem.pushMatrix();
+        INSTANCE.draw(fbw, fbh, false);
+        RenderSystem.matrixMode(GL11.GL_PROJECTION);
+        RenderSystem.popMatrix();
+
+        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
     }
 }

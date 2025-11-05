@@ -22,15 +22,11 @@ public abstract class MixinMinecraftClient {
 
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gl/Framebuffer;setClearColor(FFFF)V", shift = At.Shift.AFTER))
     public void onInitFrameBuffer(RunArgs args, CallbackInfo ci) {
-        StencilFramebuffer.IS_INITIALIZING = true;
         StencilFramebuffer.init(this.getWindow().getFramebufferWidth(), this.getWindow().getFramebufferHeight());
-        StencilFramebuffer.IS_INITIALIZING = false;
     }
 
     @Inject(method = "onResolutionChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gl/Framebuffer;resize(IIZ)V", shift = At.Shift.AFTER))
     public void onResizeFrameBuffer(CallbackInfo ci) {
-        StencilFramebuffer.IS_INITIALIZING = true;
-        StencilFramebuffer.INSTANCE.resize(this.getWindow().getFramebufferWidth(), this.getWindow().getFramebufferHeight(), false);
-        StencilFramebuffer.IS_INITIALIZING = false;
+        StencilFramebuffer.resize(this.getWindow().getFramebufferWidth(), this.getWindow().getFramebufferHeight());
     }
 }
