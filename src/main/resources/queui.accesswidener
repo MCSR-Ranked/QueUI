@@ -2,5 +2,7 @@ accessWidener v2 named
 
 accessible class com/mojang/blaze3d/platform/GlStateManager$CapabilityTracker
 
+accessible field net/minecraft/client/MinecraftClient framebuffer Lnet/minecraft/client/gl/Framebuffer;
+mutable field net/minecraft/client/MinecraftClient framebuffer Lnet/minecraft/client/gl/Framebuffer;
 accessible method net/minecraft/client/gui/DrawableHelper fillGradient (Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V
 accessible method net/minecraft/client/gui/widget/AbstractButtonWidget setFocused (Z)V

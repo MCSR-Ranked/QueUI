@@ -22,19 +22,21 @@ class ScissorRenderTest {
             matrices.pop();
 
             matrices.push();
-            StencilStack.push(StencilStack.Mode.INSIDE);
+            StencilStack.push();
             DrawableHelper.fill(matrices, 190, 30, 190 + 60, 30 + 30, QueUIConstants.BLACK_COLOR);
             DrawableHelper.fill(matrices, 230, 20, 230 + 20, 20 + 60, QueUIConstants.BLACK_COLOR);
             StencilStack.endWrite(StencilStack.Mode.INSIDE);
+            screen.getClient().getTextureManager().bindTexture(SUN_TEXTURE);
             DrawableHelper.drawTexture(matrices, 160, 20, 128, 128, 0, 0, 32, 32, 32, 32);
             StencilStack.pop();
             matrices.pop();
 
             matrices.push();
-            StencilStack.push(StencilStack.Mode.OUTSIDE);
+            StencilStack.push();
             DrawableHelper.fill(matrices, 350, 30, 350 + 60, 30 + 30, QueUIConstants.BLACK_COLOR);
             DrawableHelper.fill(matrices, 390, 20, 390 + 20, 20 + 60, QueUIConstants.BLACK_COLOR);
             StencilStack.endWrite(StencilStack.Mode.OUTSIDE);
+            screen.getClient().getTextureManager().bindTexture(SUN_TEXTURE);
             DrawableHelper.drawTexture(matrices, 320, 20, 128, 128, 0, 0, 32, 32, 32, 32);
             StencilStack.pop();
             matrices.pop();
