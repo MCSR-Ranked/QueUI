@@ -21,6 +21,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
 
     private static final int BG_COLOR = BackgroundHelper.ColorMixer.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
+    private static final int SELECTION_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 255, 0);
 
     private Supplier<Text> textUpdater;
     private RenderSupplier iconRenderer;
@@ -36,6 +37,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
     private RenderSupplier mouseExit;
     private RenderSupplier mouseHover;
     private boolean wasHovered = false;
+    private boolean selected = false;
 
     public QueUIButtonWidget(int x, int y, int width, int height) {
         super(x, y, width, height, LiteralText.EMPTY);
@@ -124,6 +126,14 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         this.messageColor = color;
     }
 
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -148,15 +158,23 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, 3, 3);
-        DrawableHelper.drawTexture(matrices, this.x + 3, this.y, this.width - 6, 3, 3, 46 + i * 20, 1, 3, 256, 256);
-        this.drawTexture(matrices, this.x + this.width - 3, this.y, 197, 46 + i * 20, 3, 3);
-        DrawableHelper.drawTexture(matrices, this.x, this.y + 3, 3, this.height - 6, 0, 49 + i * 20, 3, 1, 256, 256);
-        this.drawTexture(matrices, this.x, this.y + this.height - 3, 0, 46 + 17 + i * 20, 3, 3);
-        DrawableHelper.drawTexture(matrices, this.x + 3, this.y + this.height - 3, this.width - 6, 3, 3, 46 + 17 + i * 20, 1, 3, 256, 256);
-        this.drawTexture(matrices, this.x + this.width - 3, this.y + this.height - 3, 197, 46 + 17 + i * 20, 3, 3);
-        DrawableHelper.drawTexture(matrices, this.x + this.width - 3, this.y + 3, 3, this.height - 6, 197, 49 + i * 20, 3, 1, 256, 256);
-        DrawableHelper.fill(matrices, this.x + 3, this.y + 3, this.x + this.width - 3, this.y + this.height - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
+        drawTexture(matrices, this.x + 3, this.y, this.getWidth() - 6, 3, 3, 46 + i * 20, 1, 3, 256, 256);
+        this.drawTexture(matrices, this.x + this.getWidth() - 3, this.y, 197, 46 + i * 20, 3, 3);
+        drawTexture(matrices, this.x, this.y + 3, 3, this.getHeight() - 6, 0, 49 + i * 20, 3, 1, 256, 256);
+        this.drawTexture(matrices, this.x, this.y + this.getHeight() - 3, 0, 46 + 17 + i * 20, 3, 3);
+        drawTexture(matrices, this.x + 3, this.y + this.getHeight() - 3, this.getWidth() - 6, 3, 3, 46 + 17 + i * 20, 1, 3, 256, 256);
+        this.drawTexture(matrices, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, 197, 46 + 17 + i * 20, 3, 3);
+        drawTexture(matrices, this.x + this.getWidth() - 3, this.y + 3, 3, this.getHeight() - 6, 197, 49 + i * 20, 3, 1, 256, 256);
+        fill(matrices, this.x + 3, this.y + 3, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
+        this.renderSelectionMark(matrices, client, mouseX, mouseY);
         RenderSystem.popMatrix();
+    }
+
+    protected void renderSelectionMark(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+        if (this.isSelected()) {
+            int div = this.getWidth() / 5;
+            fill(matrices, this.x + div, this.y + this.getHeight() - 3, this.x + this.getWidth() - div, this.y + this.getHeight() - 1, SELECTION_COLOR);
+        }
     }
 
     @SuppressWarnings("deprecation")
