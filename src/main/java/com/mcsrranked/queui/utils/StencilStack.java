@@ -67,8 +67,6 @@ public class StencilStack {
             int prev = stencilStack.peek();
             RenderSystem.stencilFunc(GL11.GL_EQUAL, prev, 0xFF);
         }
-        System.out.println(stencilStack.size());
-        System.out.println("-");
     }
 
     public static void clearAll() {

@@ -21,6 +21,7 @@ public class StencilFramebuffer {
         MinecraftClient.getInstance().getFramebuffer().endWrite();
         INSTANCE.beginWrite(false);
         RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+//        DrawableHelper.fill(new MatrixStack(), 0, 0, INSTANCE.textureWidth, INSTANCE.textureHeight, BackgroundHelper.ColorMixer.getArgb(255, new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255)));
         RenderSystem.enableTexture();
         RenderSystem.enableCull();
         RenderSystem.enableBlend();
@@ -30,6 +31,7 @@ public class StencilFramebuffer {
     public static void end() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         INSTANCE.endWrite();
+        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 
         int fbw = MinecraftClient.getInstance().getWindow().getFramebufferWidth();
         int fbh = MinecraftClient.getInstance().getWindow().getFramebufferHeight();
