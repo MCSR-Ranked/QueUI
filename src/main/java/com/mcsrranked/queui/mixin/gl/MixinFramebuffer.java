@@ -20,7 +20,6 @@ public class MixinFramebuffer {
             args.set(2, GL30.GL_DEPTH24_STENCIL8);
             args.set(6, GL30.GL_DEPTH_STENCIL);
             args.set(7, GL30.GL_UNSIGNED_INT_24_8);
-        System.out.println("GL30 1 part initialised");
         }
     }
 
@@ -30,7 +29,6 @@ public class MixinFramebuffer {
     public void init2(Args args) {
         if (StencilFramebuffer.IS_INITIALIZING) {
             args.set(1, GL30.GL_DEPTH_STENCIL_ATTACHMENT);
-        System.out.println("GL30 2 part initialised");
         }
     }
 }
