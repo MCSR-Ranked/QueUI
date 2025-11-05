@@ -17,12 +17,13 @@ public class TestScreen extends QueUIScreen {
 
     @Override
     protected void init() {
-        this.addButton(new QueUIButtonWidget(this.width / 2 - 50, this.height - 30, 100, 20)
+        this.addButton(new QueUIButtonWidget<>(this.width / 2 - 50, this.height - 30, 100, 20)
                 .setTextAsString(() -> "Page: " + this.getPagination().getCurrentPage())
                 .setOnPress(button -> this.getPagination().setPage(this.getPagination().getCurrentPage() + (Screen.hasShiftDown() ? -1 : 1))));
 
         ButtonAlignmentTest.init(this);
         ScissorRenderTest.init(this);
+        ButtonVariationTest.init(this);
     }
 
     @Override

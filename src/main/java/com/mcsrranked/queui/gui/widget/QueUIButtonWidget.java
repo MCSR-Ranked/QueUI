@@ -17,14 +17,14 @@ import net.minecraft.util.math.MathHelper;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class QueUIButtonWidget extends AbstractPressableButtonWidget implements AnimateWidget {
+public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractPressableButtonWidget implements AnimateWidget {
 
     private static final int BG_COLOR = BackgroundHelper.ColorMixer.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
     private static final int SELECTION_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 255, 0);
 
     private Supplier<Text> textUpdater;
-    private RenderSupplier iconRenderer;
+    private RenderSupplier<T> iconRenderer;
     private AlignmentDirection iconAlignment = AlignmentDirection.LEFT;
     private AlignmentDirection textAlignment = AlignmentDirection.CENTER;
     private int[] iconDimension = new int[] { 8, 8 };
@@ -32,94 +32,118 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
     private AlignmentDirection contentAlignment = AlignmentDirection.CENTER;
     private int contentMargin = 0;
     private int messageColor = QueUIConstants.WHITE_COLOR;
-    private Consumer<QueUIButtonWidget> pressAction;
-    private RenderSupplier mouseEnter;
-    private RenderSupplier mouseExit;
-    private RenderSupplier mouseHover;
+    private Consumer<T> pressAction;
+    private RenderSupplier<T> mouseEnter;
+    private RenderSupplier<T> mouseExit;
+    private RenderSupplier<T> mouseHover;
     private boolean wasHovered = false;
     private boolean selected = false;
 
-    public QueUIButtonWidget(int x, int y, int width, int height) {
+    public QueUIButtonWidget(int x, int y, int width, int height, boolean updateMessage) {
         super(x, y, width, height, LiteralText.EMPTY);
+        if (updateMessage) this.updateMessage();
     }
 
-    public QueUIButtonWidget setText(Supplier<Text> textSupplier) {
+    public QueUIButtonWidget(int x, int y, int width, int height) {
+        this(x, y, width, height, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setText(Supplier<Text> textSupplier) {
         this.textUpdater = textSupplier;
         this.updateMessage();
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setText(Text text) {
+    public T setText(Text text) {
         return this.setText(() -> text);
     }
 
-    public QueUIButtonWidget setTextAsString(Supplier<String> text) {
+    public T setTextAsString(Supplier<String> text) {
         return this.setText(() -> new LiteralText(text.get()));
     }
 
-    public QueUIButtonWidget setText(String text) {
+    public T setText(String text) {
         return this.setText(new LiteralText(text));
     }
 
-    public QueUIButtonWidget setIconRenderer(RenderSupplier renderer) {
+    @SuppressWarnings("unchecked")
+    public T setIconRenderer(RenderSupplier<T> renderer) {
         this.iconRenderer = renderer;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setIconTextAlignment(AlignmentDirection iconAlignment, AlignmentDirection textAlignment) {
+    @SuppressWarnings("unchecked")
+    public T setIconTextAlignment(AlignmentDirection iconAlignment, AlignmentDirection textAlignment) {
         assert iconAlignment != textAlignment;
         this.iconAlignment = iconAlignment;
         this.textAlignment = textAlignment;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setIconDimension(int width, int height) {
+    @SuppressWarnings("unchecked")
+    public T setIconDimension(int width, int height) {
         assert width >= 0 && height >= 0;
         this.iconDimension = new int[] { width, height };
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setIconPadding(int padding) {
+    @SuppressWarnings("unchecked")
+    public T setIconPadding(int padding) {
         assert padding >= 0;
         this.iconPadding = padding;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setContentAlignment(AlignmentDirection contentAlignment, int margin) {
+    @SuppressWarnings("unchecked")
+    public T setContentAlignment(AlignmentDirection contentAlignment, int margin) {
         assert margin >= 0;
         this.contentAlignment = contentAlignment;
         this.contentMargin = margin;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setOnPress(Consumer<QueUIButtonWidget> pressAction) {
+    @SuppressWarnings("unchecked")
+    public T setOnPress(Consumer<T> pressAction) {
         this.pressAction = pressAction;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setOnMouseEnter(RenderSupplier mouseEnter) {
+    @SuppressWarnings("unchecked")
+    public T setOnMouseEnter(RenderSupplier<T> mouseEnter) {
         this.mouseEnter = mouseEnter;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setOnMouseHover(RenderSupplier mouseHover) {
+    @SuppressWarnings("unchecked")
+    public T setOnMouseHover(RenderSupplier<T> mouseHover) {
         this.mouseHover = mouseHover;
-        return this;
+        return (T) this;
     }
 
-    public QueUIButtonWidget setOnMouseExit(RenderSupplier mouseExit) {
+    @SuppressWarnings("unchecked")
+    public T setOnMouseExit(RenderSupplier<T> mouseExit) {
         this.mouseExit = mouseExit;
-        return this;
+        return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onPress() {
-        if (this.pressAction != null) this.pressAction.accept(this);
+        if (this.pressAction != null) this.pressAction.accept((T) this);
         this.updateMessage();
     }
 
+    public Supplier<Text> getTextUpdater() {
+        return textUpdater;
+    }
+
+    public RenderSupplier<T> getIconRenderer() {
+        return iconRenderer;
+    }
+
     public void updateMessage() {
-        if (this.textUpdater != null) this.setMessage(this.textUpdater.get());
+        if (this.getTextUpdater() != null) this.setMessage(this.getTextUpdater().get());
     }
 
     public void setMessageColor(int color) {
@@ -157,13 +181,13 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, 3, 3);
+        drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, 3, 3);
         drawTexture(matrices, this.x + 3, this.y, this.getWidth() - 6, 3, 3, 46 + i * 20, 1, 3, 256, 256);
-        this.drawTexture(matrices, this.x + this.getWidth() - 3, this.y, 197, 46 + i * 20, 3, 3);
+        drawTexture(matrices, this.x + this.getWidth() - 3, this.y, 197, 46 + i * 20, 3, 3);
         drawTexture(matrices, this.x, this.y + 3, 3, this.getHeight() - 6, 0, 49 + i * 20, 3, 1, 256, 256);
-        this.drawTexture(matrices, this.x, this.y + this.getHeight() - 3, 0, 46 + 17 + i * 20, 3, 3);
+        drawTexture(matrices, this.x, this.y + this.getHeight() - 3, 0, 46 + 17 + i * 20, 3, 3);
         drawTexture(matrices, this.x + 3, this.y + this.getHeight() - 3, this.getWidth() - 6, 3, 3, 46 + 17 + i * 20, 1, 3, 256, 256);
-        this.drawTexture(matrices, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, 197, 46 + 17 + i * 20, 3, 3);
+        drawTexture(matrices, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, 197, 46 + 17 + i * 20, 3, 3);
         drawTexture(matrices, this.x + this.getWidth() - 3, this.y + 3, 3, this.getHeight() - 6, 197, 49 + i * 20, 3, 1, 256, 256);
         fill(matrices, this.x + 3, this.y + 3, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
         this.renderSelectionMark(matrices, client, mouseX, mouseY);
@@ -172,7 +196,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
 
     protected void renderSelectionMark(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
         if (this.isSelected()) {
-            int div = this.getWidth() / 5;
+            int div = this.getWidth() / 4;
             fill(matrices, this.x + div, this.y + this.getHeight() - 3, this.x + this.getWidth() - div, this.y + this.getHeight() - 1, SELECTION_COLOR);
         }
     }
@@ -191,7 +215,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
         int textWidth = textRenderer.getWidth(text);
         Runnable renderText = () -> this.drawTextWithShadow(matrices, textRenderer, text, 0, 0, textColor | MathHelper.ceil(this.alpha * 255.0f) << 24);
 
-        if (this.iconRenderer != null && this.textUpdater != null) {
+        if (this.getIconRenderer() != null && this.getTextUpdater() != null) {
             if (this.iconAlignment.getY() == this.textAlignment.getY()) {
                 int totalWidth = textWidth + this.iconPadding + this.iconDimension[0];
                 int startX = Math.max(0, this.getWidth() - totalWidth) / 2, endX = this.getWidth() - startX;
@@ -206,7 +230,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
                 int iconY = (this.getHeight() - this.iconDimension[1]) / 2;
                 RenderSystem.translatef(startX + (iconFirst ? 0 : (textWidth + this.iconPadding)), iconY, 0);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, this.iconDimension[0], this.iconDimension[1], 0xFF00FF00);
-                this.iconRenderer.run(this, matrices, mouseX, mouseY);
+                this.getIconRenderer().run(this, matrices, mouseX, mouseY);
                 RenderSystem.popMatrix();
 
                 RenderSystem.pushMatrix();
@@ -231,7 +255,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
                 int iconX = (this.getWidth() - this.iconDimension[0]) / 2;
                 RenderSystem.translatef(iconX, startY + (iconFirst ? 0 : (QueUIConstants.TEXT_HEIGHT + this.iconPadding)), 0);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, this.iconDimension[0], this.iconDimension[1], 0xFF00FF00);
-                this.iconRenderer.run(this, matrices, mouseX, mouseY);
+                this.getIconRenderer().run(this, matrices, mouseX, mouseY);
                 RenderSystem.popMatrix();
 
                 RenderSystem.pushMatrix();
@@ -243,7 +267,7 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
 
                 RenderSystem.popMatrix();
             }
-        } else if (this.textUpdater != null) {
+        } else if (this.getTextUpdater() != null) {
             RenderSystem.pushMatrix();
             int textX = (this.getWidth() - textWidth) / 2;
             textX += (textX - this.contentMargin) * this.contentAlignment.getX();
@@ -252,21 +276,21 @@ public class QueUIButtonWidget extends AbstractPressableButtonWidget implements 
             RenderSystem.translatef(this.x + textX, this.y + textY, 0);
             renderText.run();
             RenderSystem.popMatrix();
-        } else if (this.iconRenderer != null) {
+        } else if (this.getIconRenderer() != null) {
             RenderSystem.pushMatrix();
             int iconX = (this.getWidth() - this.iconDimension[0]) / 2;
             iconX += (iconX - this.contentMargin) * this.contentAlignment.getX();
             int iconY = (this.getHeight() - this.iconDimension[1]) / 2;
             iconY += (iconY - this.contentMargin) * this.contentAlignment.getY();
             RenderSystem.translatef(this.x + iconX, this.y + iconY, 0);
-            this.iconRenderer.run(this, matrices, mouseX, mouseY);
+            this.getIconRenderer().run(this, matrices, mouseX, mouseY);
             RenderSystem.popMatrix();
         }
 
         RenderSystem.popMatrix();
     }
 
-    public interface RenderSupplier {
-        void run(QueUIButtonWidget button, MatrixStack matrices, int mouseX, int mouseY);
+    public interface RenderSupplier<T extends QueUIButtonWidget<T>> {
+        void run(QueUIButtonWidget<T> button, MatrixStack matrices, int mouseX, int mouseY);
     }
 }
