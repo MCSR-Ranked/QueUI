@@ -40,7 +40,7 @@ class WidgetAnimationTest {
                 new WidgetAlphaAnimation(button1, 2000, 0, 1, EasingType.EASE_OUT),
                 new WidgetPositionAnimation(button2, 2000, button2.x, button2.y - 100, button2.x, button2.y, EasingType.EASE_OUT, false),
                 new WidgetAlphaAnimation(button2, 2000, 0, 1, EasingType.EASE_OUT),
-                new WidgetPositionAnimation(button3, 2000, button3.x, button3.y - 100, button3.x, button3.y, EasingType.EASE_OUT, true)
+                new WidgetPositionAnimation(button3, 2000, button3.x, button3.y - 100, button3.x, button3.y, EasingType.EASE_OUT, true).setEasingStrength(0.5f)
         )
                 .then(builder -> builder.add(new WidgetAlphaAnimation(button2, 2000, 1, 0, EasingType.EASE_IN)), 1000)
                 .build();

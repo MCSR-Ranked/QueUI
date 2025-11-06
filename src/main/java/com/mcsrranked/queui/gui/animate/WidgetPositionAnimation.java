@@ -13,6 +13,7 @@ public class WidgetPositionAnimation extends QueUIAnimation {
     private final int endY;
     private final EasingType easingType;
     private final boolean updatePosition;
+    private float easingStrength = 1f;
 
     public WidgetPositionAnimation(AnimatableWidget animatableWidget, long duration, int startX, int startY, int endX, int endY, EasingType easingType, boolean updatePosition) {
         super(duration);
@@ -25,11 +26,16 @@ public class WidgetPositionAnimation extends QueUIAnimation {
         this.updatePosition = updatePosition;
     }
 
+    public WidgetPositionAnimation setEasingStrength(float easingStrength) {
+        this.easingStrength = easingStrength;
+        return this;
+    }
+
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY) {
         float xDiff = this.endX - this.startX;
         float yDiff = this.endY - this.startY;
-        float ease = this.easingType.ease(this.getProgress());
+        float ease = this.easingType.ease(this.getProgress(), this.easingStrength);
         this.animatableWidget.setWidgetPosition(this.startX + (xDiff * ease), this.startY + (yDiff * ease), this.updatePosition);
     }
 

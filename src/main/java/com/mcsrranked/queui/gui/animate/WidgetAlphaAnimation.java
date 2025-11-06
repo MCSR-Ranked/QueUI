@@ -10,6 +10,7 @@ public class WidgetAlphaAnimation extends QueUIAnimation {
     private final float startAlpha;
     private final float endAlpha;
     private final EasingType easingType;
+    private float easingStrength = 1f;
 
     public WidgetAlphaAnimation(AnimatableWidget animatableWidget, long duration, float startAlpha, float endAlpha, EasingType easingType) {
         super(duration);
@@ -19,10 +20,15 @@ public class WidgetAlphaAnimation extends QueUIAnimation {
         this.easingType = easingType;
     }
 
+    public WidgetAlphaAnimation setEasingStrength(float easingStrength) {
+        this.easingStrength = easingStrength;
+        return this;
+    }
+
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY) {
         float alphaDiff = this.endAlpha - this.startAlpha;
-        float ease = this.easingType.ease(this.getProgress());
+        float ease = this.easingType.ease(this.getProgress(), this.easingStrength);
         this.animatableWidget.setWidgetAlpha(this.startAlpha + (alphaDiff * ease));
     }
 
