@@ -1,6 +1,7 @@
 package com.mcsrranked.queui.gui.screen;
 
 import com.google.common.collect.Lists;
+import com.mcsrranked.queui.gui.animate.AnimationPackage;
 import com.mcsrranked.queui.gui.overlay.QueUIOverlay;
 import com.mcsrranked.queui.gui.widget.PaginationWidget;
 import net.minecraft.client.MinecraftClient;
@@ -19,6 +20,7 @@ public class QueUIScreen extends Screen {
 
     private List<QueUIOverlay> overlays = Lists.newArrayList();
     private final PaginationWidget paginationWidget = new PaginationWidget();
+    private final List<AnimationPackage> animations = Lists.newArrayList();
 
     private int ticks = 0;
     private boolean isClosed = false;
@@ -31,6 +33,7 @@ public class QueUIScreen extends Screen {
     @Override
     public void init(MinecraftClient client, int width, int height) {
         this.paginationWidget.clear();
+        this.animations.clear();
         super.init(client, width, height);
         this.addChild(this.paginationWidget);
         this.paginationWidget.setPage(this.paginationWidget.getCurrentPage());
@@ -82,6 +85,9 @@ public class QueUIScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        for (AnimationPackage animation : this.animations) {
+            animation.render(matrices, mouseX, mouseY);
+        }
         this.paginationWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -108,4 +114,21 @@ public class QueUIScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
+    public void clearAnimation() {
+        this.animations.clear();
+    }
+
+    public void addAnimation(AnimationPackage... animationPackages) {
+        this.animations.addAll(Lists.newArrayList(animationPackages));
+    }
+
+    public List<AnimationPackage> getAnimations() {
+        return animations;
+    }
+
+    public void startAllAnimations() {
+        for (AnimationPackage animation : this.animations) {
+            animation.start();
+        }
+    }
 }

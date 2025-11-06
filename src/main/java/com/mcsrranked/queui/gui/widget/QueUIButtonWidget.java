@@ -3,6 +3,7 @@ package com.mcsrranked.queui.gui.widget;
 import com.mcsrranked.queui.QueUI;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.type.AlignmentDirection;
+import com.mcsrranked.queui.utils.ColorUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -12,12 +13,11 @@ import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractPressableButtonWidget implements AnimateWidget {
+public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractPressableButtonWidget implements AnimatableWidget {
 
     private static final int BG_COLOR = BackgroundHelper.ColorMixer.getArgb(150, 0, 0, 0);
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
@@ -38,6 +38,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     private RenderSupplier<T> mouseHover;
     private boolean wasHovered = false;
     private boolean selected = false;
+    private float[] renderOffset = new float[] { 0, 0 };
 
     public QueUIButtonWidget(int x, int y, int width, int height, boolean updateMessage) {
         super(x, y, width, height, LiteralText.EMPTY);
@@ -158,11 +159,15 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         return selected;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(this.renderOffset[0], this.renderOffset[1], 0);
         this.renderBg(matrices, minecraftClient, mouseX, mouseY);
         this.renderContents(matrices, minecraftClient, mouseX, mouseY);
+        RenderSystem.popMatrix();
 
         boolean isHovered = this.isHovered();
         if (!this.wasHovered && isHovered && this.mouseEnter != null) this.mouseEnter.run(this, matrices, mouseX, mouseY);
@@ -189,7 +194,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         drawTexture(matrices, this.x + 3, this.y + this.getHeight() - 3, this.getWidth() - 6, 3, 3, 46 + 17 + i * 20, 1, 3, 256, 256);
         drawTexture(matrices, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, 197, 46 + 17 + i * 20, 3, 3);
         drawTexture(matrices, this.x + this.getWidth() - 3, this.y + 3, 3, this.getHeight() - 6, 197, 49 + i * 20, 3, 1, 256, 256);
-        fill(matrices, this.x + 3, this.y + 3, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, this.active ? BG_COLOR : BG_INACTIVE_COLOR);
+        fill(matrices, this.x + 3, this.y + 3, this.x + this.getWidth() - 3, this.y + this.getHeight() - 3, ColorUtils.mixAlpha(this.active ? BG_COLOR : BG_INACTIVE_COLOR, this.alpha));
         this.renderSelectionMark(matrices, client, mouseX, mouseY);
         RenderSystem.popMatrix();
     }
@@ -213,7 +218,12 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
 
         Text text = this.getMessage();
         int textWidth = textRenderer.getWidth(text);
-        Runnable renderText = () -> this.drawTextWithShadow(matrices, textRenderer, text, 0, 0, textColor | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        Runnable renderText = () -> {
+            int newColor = ColorUtils.mixAlpha(textColor, this.alpha);
+            if (BackgroundHelper.ColorMixer.getAlpha(newColor) > 3) {
+                this.drawTextWithShadow(matrices, textRenderer, text, 0, 0, newColor);
+            }
+        };
 
         if (this.getIconRenderer() != null && this.getTextUpdater() != null) {
             if (this.iconAlignment.getY() == this.textAlignment.getY()) {
@@ -230,7 +240,14 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 int iconY = (this.getHeight() - this.iconDimension[1]) / 2;
                 RenderSystem.translatef(startX + (iconFirst ? 0 : (textWidth + this.iconPadding)), iconY, 0);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, this.iconDimension[0], this.iconDimension[1], 0xFF00FF00);
+                RenderSystem.pushMatrix();
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.enableDepthTest();
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);
+                RenderSystem.enableBlend();
                 this.getIconRenderer().run(this, matrices, mouseX, mouseY);
+                RenderSystem.popMatrix();
                 RenderSystem.popMatrix();
 
                 RenderSystem.pushMatrix();
@@ -255,7 +272,13 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 int iconX = (this.getWidth() - this.iconDimension[0]) / 2;
                 RenderSystem.translatef(iconX, startY + (iconFirst ? 0 : (QueUIConstants.TEXT_HEIGHT + this.iconPadding)), 0);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, this.iconDimension[0], this.iconDimension[1], 0xFF00FF00);
+                RenderSystem.pushMatrix();
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.enableDepthTest();
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);
                 this.getIconRenderer().run(this, matrices, mouseX, mouseY);
+                RenderSystem.popMatrix();
                 RenderSystem.popMatrix();
 
                 RenderSystem.pushMatrix();
@@ -283,11 +306,31 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
             int iconY = (this.getHeight() - this.iconDimension[1]) / 2;
             iconY += (iconY - this.contentMargin) * this.contentAlignment.getY();
             RenderSystem.translatef(this.x + iconX, this.y + iconY, 0);
+            RenderSystem.pushMatrix();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.enableDepthTest();
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);
             this.getIconRenderer().run(this, matrices, mouseX, mouseY);
+            RenderSystem.popMatrix();
             RenderSystem.popMatrix();
         }
 
         RenderSystem.popMatrix();
+    }
+
+    @Override
+    public void setWidgetAlpha(float alpha) {
+        this.setAlpha(alpha);
+    }
+
+    @Override
+    public void setWidgetPosition(float x, float y, boolean updatePosition) {
+        if (updatePosition) {
+            this.x = (int) x;
+            this.y = (int) y;
+        }
+        this.renderOffset = new float[] { x - this.x, y - this.y };
     }
 
     public interface RenderSupplier<T extends QueUIButtonWidget<T>> {
