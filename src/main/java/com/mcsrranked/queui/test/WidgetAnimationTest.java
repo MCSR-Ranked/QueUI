@@ -45,11 +45,13 @@ class WidgetAnimationTest {
                 .then(builder -> builder.add(new WidgetAlphaAnimation(button2, 2000, 1, 0, EasingType.EASE_IN)), 1000)
                 .build();
 
+        // NOT required action...
+        screen.addAnimation(animation);
+
         screen.getPagination().addElement(3, new QueUIButtonWidget<>(20, 20, 80, 20)
                 .setText("Animate")
                 .setOnPress(b -> animation.start())
         );
 
-        screen.addAnimation(animation);
     }
 }
