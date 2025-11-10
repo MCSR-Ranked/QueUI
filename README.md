@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.MCSR-Ranked:QueUI:1.0.1'
+    implementation 'com.github.MCSR-Ranked:QueUI:1.1'
 }
 ```
 
