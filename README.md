@@ -15,5 +15,5 @@ dependencies {
 }
 ```
 
-You can see the test codes in [here](https://github.com/MCSR-Ranked/QueUI/tree/1.0.1/src/main/java/com/mcsrranked/queui/test).
+You can see the test codes in [here](https://github.com/MCSR-Ranked/QueUI/tree/master/src/main/java/com/mcsrranked/queui/test).
 We will write up the API documents later :)
