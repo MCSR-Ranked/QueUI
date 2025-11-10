@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation 'com.github.MCSR-Ranked:QueUI:1.1'
+    modImplementation 'com.github.MCSR-Ranked:QueUI:1.2'
 }
 ```
 
