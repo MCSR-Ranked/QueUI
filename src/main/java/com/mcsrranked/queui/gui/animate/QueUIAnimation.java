@@ -21,6 +21,10 @@ public abstract class QueUIAnimation {
         return this.startTime != 0;
     }
 
+    public boolean isDone() {
+        return this.getProgress() == 1f;
+    }
+
     public void cancel() {
         if (!this.hasStarted()) return;
         this.startTime += this.getFullDuration();
@@ -30,8 +34,6 @@ public abstract class QueUIAnimation {
     public abstract void render(MatrixStack matrixStack, int mouseX, int mouseY);
 
     public void onCancelled() {}
-
-    public void onDone() {}
 
     public long getDuration() {
         return this.hasStarted() ? Math.min(System.currentTimeMillis() - this.startTime, this.getFullDuration()) : 0;

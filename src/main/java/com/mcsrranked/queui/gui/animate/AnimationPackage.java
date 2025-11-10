@@ -39,7 +39,7 @@ public class AnimationPackage {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY) {
         boolean isDone = true;
         for (QueUIAnimation queUIAnimation : this.targetPackage.currentStack) {
-            if (queUIAnimation.hasStarted()) queUIAnimation.render(matrixStack, mouseX, mouseY);
+            if (queUIAnimation.hasStarted() && !queUIAnimation.isDone()) queUIAnimation.render(matrixStack, mouseX, mouseY);
             if (queUIAnimation.getProgress() != 1.0f) isDone = false;
         }
         if (isDone && this.targetPackage.nextPackage != null) {
