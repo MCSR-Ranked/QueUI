@@ -1,4 +1,6 @@
-# QueUI
+# QueUI 
+[![](https://jitpack.io/v/MCSR-Ranked/QueUI.svg)](https://jitpack.io/#MCSR-Ranked/QueUI)
+
 Minecraft 1.16.1 Fabric Mod for easy to make animations and utilizes
 
 ### Usage (Gradle)
@@ -9,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.MCSR-Ranked:QueUI:1.1'
+    modImplementation 'com.github.MCSR-Ranked:QueUI:1.1'
 }
 ```
 
