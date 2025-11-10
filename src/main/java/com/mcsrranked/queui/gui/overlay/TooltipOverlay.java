@@ -42,16 +42,18 @@ public class TooltipOverlay implements QueUIOverlay {
         int x = this.tooltipX != null ? this.tooltipX : mouseX;
         int y = this.tooltipY != null ? this.tooltipY : mouseY;
 
-        int topLeft = x + 12;
-        int bottomRight = y - 12;
+        int paddingWidth = 12;
+        int topLeft = x + paddingWidth;
+        int bottomRight = y - paddingWidth;
 
         int textsHeight = 8;
         if (this.textLines.size() > 1) {
-            textsHeight += 2 + (this.textLines.size() - 1) * 10;
+            textsHeight += this.firstLinePadding + (this.textLines.size() - 1) * 10;
         }
 
         if (topLeft + maxTextWidth > screen.width) {
-            topLeft -= 28 + topLeft;
+            topLeft = x - maxTextWidth - paddingWidth;
+            topLeft = Math.max(topLeft, paddingWidth);
         }
 
         if (bottomRight + textsHeight + 6 > screen.height) {
@@ -59,8 +61,8 @@ public class TooltipOverlay implements QueUIOverlay {
         }
 
         int backgroundColor = 0xF0100010;
-        int lineGradationStart = 0x5050000F;
-        int lineGradationEnd = 0x5010000F;
+        int lineGradationStart = 0x505000FF;
+        int lineGradationEnd = 0x5028007F;
         int zLayer = 400;
 
         matrices.push();
@@ -163,9 +165,9 @@ public class TooltipOverlay implements QueUIOverlay {
         public TooltipOverlay build(QueUIScreen screen) {
             List<StringRenderable> texts = Lists.newArrayList();
             if (this.wrapWidth != 0) {
-                int wrapWidth = this.wrapWidth == -1 ? (int) (screen.width / 0.5f) : this.wrapWidth;
+                int adjustedWidth = this.wrapWidth == -1 ? (int) (screen.width * 0.5f) : this.wrapWidth;
                 for (StringRenderable text : this.textLines) {
-                    texts.addAll(screen.getTextRenderer().wrapLines(text, wrapWidth));
+                    texts.addAll(screen.getTextRenderer().wrapLines(text, adjustedWidth));
                 }
             } else {
                 texts.addAll(this.textLines);

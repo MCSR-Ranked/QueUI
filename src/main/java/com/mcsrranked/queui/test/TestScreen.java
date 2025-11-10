@@ -25,6 +25,7 @@ public class TestScreen extends QueUIScreen {
         ScissorRenderTest.init(this);
         ButtonVariationTest.init(this);
         WidgetAnimationTest.init(this);
+        TooltipTest.init(this);
     }
 
     @Override
