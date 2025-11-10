@@ -31,6 +31,11 @@ public class AnimationPackage {
         return started;
     }
 
+    public boolean isDone() {
+        if (this.targetPackage.nextPackage != null) return false;
+        return this.targetPackage.currentStack.stream().allMatch(animate -> animate.getProgress() == 1f);
+    }
+
     public void render(MatrixStack matrixStack, int mouseX, int mouseY) {
         boolean isDone = true;
         for (QueUIAnimation queUIAnimation : this.targetPackage.currentStack) {
