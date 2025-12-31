@@ -57,5 +57,6 @@ public class StencilFramebuffer {
         RenderSystem.popMatrix();
 
         RenderSystem.matrixMode(GL11.GL_MODELVIEW);
+        MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
     }
 }
