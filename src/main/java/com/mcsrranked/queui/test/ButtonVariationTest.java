@@ -23,5 +23,21 @@ class ButtonVariationTest {
         screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(320, 50, 80, 20)
                 .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED))
                 .setFullBordered(false));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(20, 80, 40, 20));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(62, 80, 40, 20));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(120, 80, 40, 20)
+                .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED)));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(162, 80, 40, 20)
+                .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED)));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(220, 80, 40, 20)
+                .setFullBordered(false));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(262, 80, 40, 20)
+                .setFullBordered(false));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(320, 80, 40, 20)
+                .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED))
+                .setFullBordered(false));
+        screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(362, 80, 40, 20)
+                .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED))
+                .setFullBordered(false));
     }
 }

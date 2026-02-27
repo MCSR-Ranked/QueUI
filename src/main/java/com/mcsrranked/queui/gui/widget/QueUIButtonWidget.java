@@ -28,7 +28,6 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
     private static final int SELECTION_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 255, 0);
 
-    private final long createdAt = System.currentTimeMillis();
     private Supplier<Text> textUpdater;
     private RenderSupplier<T> iconRenderer;
     private AlignmentDirection iconAlignment = AlignmentDirection.LEFT;

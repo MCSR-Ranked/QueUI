@@ -114,7 +114,7 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
         } else {
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
-            int div = this.getWidth() / 4;
+            int div = this.getWidth() / (this.isToggle() ? 4 : 3);
             fill(matrices, this.x + div, this.y + this.getHeight() - 3, this.x + this.getWidth() - div, this.y + this.getHeight() - 1, color);
         }
     }
