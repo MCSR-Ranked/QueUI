@@ -14,7 +14,7 @@ class WidgetAnimationTest {
         QueUIButtonWidget<?> button1 = screen.getPagination().addElement(3, new QueUIButtonWidget<>(20, 50, 100, 20)
                 .setText("test")
                 .setIconDimension(16, 16)
-                .setIconRenderer((b, matrices, mouseX, mouseY) -> {
+                .setIconRenderer((b, matrices, mouseX, mouseY, rawX, rawY) -> {
                     screen.getClient().getTextureManager().bindTexture(new Identifier("textures/item/ender_eye.png"));
                     DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 16, 16, 16, 16);
                 })
@@ -22,7 +22,7 @@ class WidgetAnimationTest {
         QueUIButtonWidget<?> button2 = screen.getPagination().addElement(3, new QueUIButtonWidget<>(140, 50, 100, 20)
                 .setText("test")
                 .setIconDimension(16, 16)
-                .setIconRenderer((b, matrices, mouseX, mouseY) -> {
+                .setIconRenderer((b, matrices, mouseX, mouseY, rawX, rawY) -> {
                     screen.getClient().getTextureManager().bindTexture(new Identifier("textures/item/ender_eye.png"));
                     DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 16, 16, 16, 16);
                 })
@@ -30,7 +30,7 @@ class WidgetAnimationTest {
         QueUIButtonWidget<?> button3 = screen.getPagination().addElement(3, new QueUIButtonWidget<>(240, 50, 100, 20)
                 .setText("test")
                 .setIconDimension(16, 16)
-                .setIconRenderer((b, matrices, mouseX, mouseY) -> {
+                .setIconRenderer((b, matrices, mouseX, mouseY, rawX, rawY) -> {
                     screen.getClient().getTextureManager().bindTexture(new Identifier("textures/item/ender_eye.png"));
                     DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 16, 16, 16, 16);
                 })

@@ -21,11 +21,12 @@ public class TestScreen extends QueUIScreen {
                 .setTextAsString(() -> "Page: " + this.getPagination().getCurrentPage())
                 .setOnPress(button -> this.getPagination().setPage(this.getPagination().getCurrentPage() + (Screen.hasShiftDown() ? -1 : 1))));
 
-        ButtonAlignmentTest.init(this);
+        ButtonAlignmentTest.init(this, 0, false);
         ScissorRenderTest.init(this);
         ButtonVariationTest.init(this);
         WidgetAnimationTest.init(this);
         TooltipTest.init(this);
+        ButtonAlignmentTest.init(this, 5, true);
     }
 
     @Override
