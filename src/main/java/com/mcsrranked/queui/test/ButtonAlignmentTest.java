@@ -9,7 +9,7 @@ import net.minecraft.text.LiteralText;
 
 class ButtonAlignmentTest {
     static void init(QueUIScreen screen, int page, boolean longerText) {
-        LiteralText text = new LiteralText(longerText ? "TESTTESTTESTTES" : "TEST");
+        LiteralText text = new LiteralText(longerText ? "123456789012345" : "TEST");
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(10, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.LEFT, 4)
                 .setText(text)

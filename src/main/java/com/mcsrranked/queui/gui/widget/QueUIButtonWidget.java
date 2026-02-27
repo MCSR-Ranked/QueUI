@@ -4,6 +4,7 @@ import com.mcsrranked.queui.QueUI;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.type.AlignmentDirection;
 import com.mcsrranked.queui.utils.ColorUtils;
+import com.mcsrranked.queui.utils.ScissorStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -27,6 +28,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
     private static final int SELECTION_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 255, 0);
 
+    private final long createdAt = System.currentTimeMillis();
     private Supplier<Text> textUpdater;
     private RenderSupplier<T> iconRenderer;
     private AlignmentDirection iconAlignment = AlignmentDirection.LEFT;
@@ -35,6 +37,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     private int iconPadding = 2;
     private AlignmentDirection contentAlignment = AlignmentDirection.CENTER;
     private int contentMargin = 4;
+    private double scrollSpeed = 1;
     private int messageColor = QueUIConstants.WHITE_COLOR;
     private Consumer<T> pressAction;
     private RenderSupplier<T> mouseEnter;
@@ -105,6 +108,13 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         assert margin >= 0;
         this.contentAlignment = contentAlignment;
         this.contentMargin = margin;
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setScrollSpeed(double scrollSpeed) {
+        assert scrollSpeed > 0;
+        this.scrollSpeed = scrollSpeed;
         return (T) this;
     }
 
@@ -257,12 +267,19 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 matrices.push();
                 int textY = (this.getHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
                 matrices.translate(startX + (iconFirst ? (this.iconDimension[0] + this.iconPadding) : 0), textY, 0);
+                ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
+                matrices.push();
+                double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
+                matrices.translate((rawTextWidth - allowTextWidth) * -progress, 0, 0);
                 renderText.run();
+                matrices.pop();
+                ScissorStack.pop();
                 matrices.pop();
 
                 matrices.pop();
             } else {
+                int allowTextWidth = this.getWidth() - (this.contentMargin * 2);
                 int totalHeight = QueUIConstants.TEXT_HEIGHT + this.iconPadding + this.iconDimension[1];
                 int startY = Math.max(0, this.getHeight() - totalHeight) / 2, endY = this.getHeight() - startY;
                 boolean iconFirst = this.iconAlignment.getY() < this.textAlignment.getY();
@@ -286,22 +303,36 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 matrices.pop();
 
                 matrices.push();
-                int textX = (this.getWidth() - rawTextWidth) / 2;
+                int textX = allowTextWidth < rawTextWidth ? this.contentMargin : ((this.getWidth() - rawTextWidth) / 2);
                 matrices.translate(textX, startY + (iconFirst ? (this.iconDimension[1] + this.iconPadding) : 0), 0);
+                ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
                 if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
+                matrices.push();
+                double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
+                matrices.translate(Math.max((rawTextWidth - allowTextWidth), 0) * -progress, 0, 0);
                 renderText.run();
+                matrices.pop();
+                ScissorStack.pop();
                 matrices.pop();
 
                 matrices.pop();
             }
         } else if (this.getTextUpdater() != null) {
+            int allowTextWidth = this.getWidth() - (this.contentMargin * 2);
             matrices.push();
-            int textX = (this.getWidth() - rawTextWidth) / 2;
+            int textX = allowTextWidth < rawTextWidth ? this.contentMargin : ((this.getWidth() - rawTextWidth) / 2);
             textX += (textX - this.contentMargin) * this.contentAlignment.getX();
             int textY = (this.getHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
             textY += (textY - this.contentMargin) * this.contentAlignment.getY();
             matrices.translate(this.x + textX, this.y + textY, 0);
+            ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
+            if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
+            matrices.push();
+            double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
+            matrices.translate(Math.max((rawTextWidth - allowTextWidth), 0) * -progress, 0, 0);
             renderText.run();
+            matrices.pop();
+            ScissorStack.pop();
             matrices.pop();
         } else if (this.getIconRenderer() != null) {
             matrices.push();
@@ -351,5 +382,16 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         vector.transform(model);
 
         return new Pair<>((int) vector.getX(), (int) vector.getY());
+    }
+
+    private static double getLoopingSmooth(long duration) {
+        double pauseRatio = 0.2;
+        double progress = (double) (System.currentTimeMillis() % duration) / duration;
+
+        double v = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
+        double expanded = v * (1 + 2 * pauseRatio) - pauseRatio;
+        double clamped = Math.max(0.0, Math.min(1.0, expanded));
+
+        return clamped * clamped * (3 - 2 * clamped);
     }
 }
