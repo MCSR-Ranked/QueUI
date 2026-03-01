@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> extends QueUIButtonWidget<T> {
@@ -99,8 +100,8 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
     }
 
     @Override
-    public Supplier<Text> getTextUpdater() {
-        return this.isToggle() ? this.getTextOnUpdater() : this.getTextOffUpdater();
+    public Function<T, Text> getTextUpdater() {
+        return this.isToggle() ? button -> this.getTextOnUpdater().get() : button -> this.getTextOffUpdater().get();
     }
 
     @Override

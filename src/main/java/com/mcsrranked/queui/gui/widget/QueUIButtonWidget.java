@@ -20,6 +20,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractPressableButtonWidget implements AnimatableWidget {
@@ -28,7 +29,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     private static final int BG_INACTIVE_COLOR = BackgroundHelper.ColorMixer.getArgb(80, 0, 0, 0);
     private static final int SELECTION_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 255, 0);
 
-    private Supplier<Text> textUpdater;
+    private Function<T, Text> textUpdater;
     private RenderSupplier<T> iconRenderer;
     private AlignmentDirection iconAlignment = AlignmentDirection.LEFT;
     private AlignmentDirection textAlignment = AlignmentDirection.CENTER;
@@ -55,8 +56,12 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         this(x, y, width, height, true);
     }
 
-    @SuppressWarnings("unchecked")
     public T setText(Supplier<Text> textSupplier) {
+        return this.setText(button -> textSupplier.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setText(Function<T, Text> textSupplier) {
         this.textUpdater = textSupplier;
         this.updateMessage();
         return (T) this;
@@ -67,7 +72,11 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     }
 
     public T setTextAsString(Supplier<String> text) {
-        return this.setText(() -> new LiteralText(text.get()));
+        return this.setText(button -> new LiteralText(text.get()));
+    }
+
+    public T setTextAsString(Function<T, String> text) {
+        return this.setText(button -> new LiteralText(text.apply(button)));
     }
 
     public T setText(String text) {
@@ -148,7 +157,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         this.updateMessage();
     }
 
-    public Supplier<Text> getTextUpdater() {
+    public Function<T, Text> getTextUpdater() {
         return textUpdater;
     }
 
@@ -156,8 +165,9 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         return iconRenderer;
     }
 
+    @SuppressWarnings("unchecked")
     public void updateMessage() {
-        if (this.getTextUpdater() != null) this.setMessage(this.getTextUpdater().get());
+        if (this.getTextUpdater() != null) this.setMessage(this.getTextUpdater().apply((T) this));
     }
 
     public void setMessageColor(int color) {

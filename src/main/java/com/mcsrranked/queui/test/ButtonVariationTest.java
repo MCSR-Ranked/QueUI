@@ -1,6 +1,7 @@
 package com.mcsrranked.queui.test;
 
 import com.mcsrranked.queui.gui.screen.QueUIScreen;
+import com.mcsrranked.queui.gui.widget.QueUISliderWidget;
 import com.mcsrranked.queui.gui.widget.QueUIToggleButtonWidget;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -39,5 +40,15 @@ class ButtonVariationTest {
         screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(362, 80, 40, 20)
                 .setOnOffMessage(new TranslatableText("options.on").formatted(Formatting.GREEN), new TranslatableText("options.off").formatted(Formatting.RED))
                 .setFullBordered(false));
+        screen.getPagination().addElement(2, new QueUISliderWidget<>(20, 110, 80, 20, Integer.class)
+                .setTextAsString(button  -> "Test Option: " + button.getValueString()));
+        screen.getPagination().addElement(2, new QueUISliderWidget<>(120, 110, 80, 16, Double.class)
+                .setTextAsString(button  -> "Test Option: " + button.getValueString()));
+        screen.getPagination().addElement(2, new QueUISliderWidget<>(220, 110, 80, 24, Double.class)
+                .setTextAsString(button  -> "Test Option: " + button.getValueString()));
+        screen.getPagination().addElement(2, new QueUISliderWidget<>(320, 110, 80, 20, Integer.class)
+                .setTextAsString(button  -> "Test Option: " + button.getValueString())
+                .setValueRange(0, 100)
+                .setValueStep(5));
     }
 }
