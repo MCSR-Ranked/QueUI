@@ -4,7 +4,7 @@ import com.mcsrranked.queui.QueUI;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.type.AlignmentDirection;
 import com.mcsrranked.queui.utils.ColorUtils;
-import com.mcsrranked.queui.utils.ScissorStack;
+import com.mcsrranked.queui.utils.TextUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -240,12 +240,6 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
 
         Text text = this.getMessage();
         int rawTextWidth = textRenderer.getWidth(text);
-        Runnable renderText = () -> {
-            int newColor = ColorUtils.mixAlpha(textColor, this.alpha);
-            if (BackgroundHelper.ColorMixer.getAlpha(newColor) > 3) {
-                this.drawTextWithShadow(matrices, textRenderer, text, 0, 0, newColor);
-            }
-        };
 
         if (this.getIconRenderer() != null && this.getTextUpdater() != null) {
             if (this.iconAlignment.getY() == this.textAlignment.getY()) {
@@ -276,14 +270,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 matrices.push();
                 int textY = (this.getHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
                 matrices.translate(startX + (iconFirst ? (this.iconDimension[0] + this.iconPadding) : 0), textY, 0);
-                ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
-                if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
-                matrices.push();
-                double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
-                matrices.translate((rawTextWidth - allowTextWidth) * -progress, 0, 0);
-                renderText.run();
-                matrices.pop();
-                ScissorStack.pop();
+                TextUtils.renderScrollText(matrices, text, 0, 0, textColor, this.alpha, allowTextWidth, this.scrollSpeed);
                 matrices.pop();
 
                 matrices.pop();
@@ -314,14 +301,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
                 matrices.push();
                 int textX = allowTextWidth < rawTextWidth ? this.contentMargin : ((this.getWidth() - rawTextWidth) / 2);
                 matrices.translate(textX, startY + (iconFirst ? (this.iconDimension[1] + this.iconPadding) : 0), 0);
-                ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
-                if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
-                matrices.push();
-                double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
-                matrices.translate(Math.max((rawTextWidth - allowTextWidth), 0) * -progress, 0, 0);
-                renderText.run();
-                matrices.pop();
-                ScissorStack.pop();
+                TextUtils.renderScrollText(matrices, text, 0, 0, textColor, this.alpha, allowTextWidth, this.scrollSpeed);
                 matrices.pop();
 
                 matrices.pop();
@@ -334,14 +314,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
             int textY = (this.getHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
             textY += (textY - this.contentMargin) * this.contentAlignment.getY();
             matrices.translate(this.x + textX, this.y + textY, 0);
-            ScissorStack.push(matrices, 0, 0, allowTextWidth, QueUIConstants.TEXT_HEIGHT);
-            if (QueUI.DEBUG_MODE) DrawableHelper.fill(matrices, 0, 0, rawTextWidth, QueUIConstants.TEXT_HEIGHT, 0xFF0000FF);
-            matrices.push();
-            double progress = getLoopingSmooth((long) (8000L * this.scrollSpeed));
-            matrices.translate(Math.max((rawTextWidth - allowTextWidth), 0) * -progress, 0, 0);
-            renderText.run();
-            matrices.pop();
-            ScissorStack.pop();
+            TextUtils.renderScrollText(matrices, text, 0, 0, textColor, this.alpha, allowTextWidth, this.scrollSpeed);
             matrices.pop();
         } else if (this.getIconRenderer() != null) {
             matrices.push();
@@ -391,16 +364,5 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         vector.transform(model);
 
         return new Pair<>((int) vector.getX(), (int) vector.getY());
-    }
-
-    private static double getLoopingSmooth(long duration) {
-        double pauseRatio = 0.2;
-        double progress = (double) (System.currentTimeMillis() % duration) / duration;
-
-        double v = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
-        double expanded = v * (1 + 2 * pauseRatio) - pauseRatio;
-        double clamped = Math.max(0.0, Math.min(1.0, expanded));
-
-        return clamped * clamped * (3 - 2 * clamped);
     }
 }
