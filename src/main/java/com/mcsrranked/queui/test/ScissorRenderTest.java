@@ -10,6 +10,9 @@ import net.minecraft.util.Identifier;
 class ScissorRenderTest {
     private static final Identifier SUN_TEXTURE = new Identifier("textures/environment/sun.png");
 
+    /**
+     * Used Page: 1
+     */
     static void init(QueUIScreen screen) {
         screen.getPagination().setRenderPage(1, (matrices, mouseX, mouseY, delta) -> {
             screen.getClient().getTextureManager().bindTexture(SUN_TEXTURE);

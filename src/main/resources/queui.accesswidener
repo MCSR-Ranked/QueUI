@@ -7,3 +7,10 @@ mutable field net/minecraft/client/MinecraftClient framebuffer Lnet/minecraft/cl
 accessible method net/minecraft/client/gui/DrawableHelper fillGradient (Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V
 accessible method net/minecraft/client/gui/DrawableHelper fillGradient (Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V
 accessible method net/minecraft/client/gui/widget/AbstractButtonWidget setFocused (Z)V
+
+accessible method net/minecraft/client/gui/widget/EntryListWidget getMaxScroll ()I
+accessible method net/minecraft/client/gui/widget/EntryListWidget getRowBottom (I)I
+extendable method net/minecraft/client/gui/widget/EntryListWidget getRowBottom (I)I
+accessible field net/minecraft/client/gui/widget/EntryListWidget renderSelection Z
+extendable method net/minecraft/client/gui/widget/EntryListWidget getEntryAtPosition (DD)Lnet/minecraft/client/gui/widget/EntryListWidget$Entry;
+accessible method net/minecraft/client/gui/widget/EntryListWidget scroll (I)V

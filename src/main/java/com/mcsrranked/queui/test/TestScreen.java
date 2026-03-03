@@ -27,6 +27,9 @@ public class TestScreen extends QueUIScreen {
         WidgetAnimationTest.init(this);
         TooltipTest.init(this);
         ButtonAlignmentTest.init(this, 5, true);
+        GroupListTest.init(this);
+
+        this.getPagination().setPage(6);
     }
 
     @Override

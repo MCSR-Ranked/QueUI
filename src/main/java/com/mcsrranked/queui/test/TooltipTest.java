@@ -8,6 +8,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 class TooltipTest {
+
+    /**
+     * Used Page: 4
+     */
     static void init(QueUIScreen screen) {
         screen.getPagination().addElement(4, new QueUIButtonWidget<>(20, 50, 100, 20)
                 .setText("test")

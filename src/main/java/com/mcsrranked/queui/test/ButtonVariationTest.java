@@ -7,6 +7,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 class ButtonVariationTest {
+
+    /**
+     * Used Page: 2
+     */
     static void init(QueUIScreen screen) {
         screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(20, 20, 80, 20));
         screen.getPagination().addElement(2, new QueUIToggleButtonWidget<>(20, 50, 80, 20));

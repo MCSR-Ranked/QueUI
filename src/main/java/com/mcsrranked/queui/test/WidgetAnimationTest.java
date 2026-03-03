@@ -10,6 +10,10 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.util.Identifier;
 
 class WidgetAnimationTest {
+
+    /**
+     * Used Page: 3
+     */
     static void init(QueUIScreen screen) {
         QueUIButtonWidget<?> button1 = screen.getPagination().addElement(3, new QueUIButtonWidget<>(20, 50, 100, 20)
                 .setText("test")
