@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import com.mcsrranked.queui.gui.screen.QueUIScreen;
 import com.mcsrranked.queui.gui.widget.QueUICategoryListWidget;
 import com.mcsrranked.queui.gui.widget.QueUIToggleButtonWidget;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.text.LiteralText;
 
 class GroupListTest {
 
@@ -12,10 +15,13 @@ class GroupListTest {
      */
     static void init(QueUIScreen screen) {
         screen.getPagination().addElement(6, new QueUICategoryListWidget(screen, 0, 0, screen.width, screen.height - 40, 8, 60, Lists.newArrayList(
-                new QueUICategoryListWidget.Option("Test1")
-                        .setCategory("Cat1")
+                new QueUICategoryListWidget.Option("Click Test")
                         .setDescription("something testing")
-                        .setTooltipDescription(true),
+                        .setTooltipDescription(true)
+                        .setOnClick(() -> {
+                            System.out.println("HEY YOU CLICKED ME!");
+                            MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, new LiteralText("Test"), new LiteralText("Hello World!")));
+                        }),
                 new QueUICategoryListWidget.Option("Test2")
                         .setCategory("Cat2")
                         .setDescription("something testing")

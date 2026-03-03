@@ -85,18 +85,32 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 widgetEntries.put(option.category, Lists.newArrayList(categoryEntry));
                 categories.add(new ListWidget.Entry(screen, categoryWidget, option, true).setLink(categoryEntry).setEntries(widgetEntries.get(option.category)));
             }
-            widgetEntries.get(option.category).add(new ListWidget.Entry(screen, this.entryWidget, option, false));
+            if (option.category == null) {
+                entryList.add(new ListWidget.Entry(screen, this.entryWidget, option, false));
+            } else {
+                widgetEntries.get(option.category).add(new ListWidget.Entry(screen, this.entryWidget, option, false));
+            }
         }
 
         keyword = keyword.trim().toLowerCase(Locale.ROOT);
+
+        // Filtering for non-category entries
+        for (ListWidget.Entry entry : Lists.newArrayList(entryList)) {
+            String trimTitle = entry.title.getString().toLowerCase(Locale.ROOT).trim();
+            String trimDesc = entry.description == null ? null : entry.description.get().getString().toLowerCase(Locale.ROOT).trim();
+            if (!trimTitle.contains(keyword) && !(trimDesc != null && trimDesc.contains(keyword)))
+                entryList.remove(entry);
+        }
+
+        // Filtering for category entries
         for (Map.Entry<String, List<ListWidget.Entry>> mapEntry : widgetEntries.entrySet()) {
             for (ListWidget.Entry widgetEntry : mapEntry.getValue()) {
                 if (widgetEntry.category) entryList.add(widgetEntry);
                 else {
-                    String lowCat = mapEntry.getKey().toLowerCase(Locale.ROOT).trim();
+                    String lowCat = mapEntry.getKey() == null ? null : mapEntry.getKey().toLowerCase(Locale.ROOT).trim();
                     String trimTitle = widgetEntry.title.getString().toLowerCase(Locale.ROOT).trim();
                     String trimDesc = widgetEntry.description == null ? null : widgetEntry.description.get().getString().toLowerCase(Locale.ROOT).trim();
-                    if (lowCat.contains(keyword) || trimTitle.contains(keyword) || (trimDesc != null && trimDesc.contains(keyword)))
+                    if ((lowCat != null && lowCat.contains(keyword)) || trimTitle.contains(keyword) || (trimDesc != null && trimDesc.contains(keyword)))
                         entryList.add(widgetEntry);
                 }
             }
@@ -443,6 +457,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             private final QueUIScreen screen;
             private final ListWidget parent;
             private final boolean category;
+            private final Runnable onClick;
             private boolean rendered = false;
             private Entry linked;
             private List<Entry> entries;
@@ -454,21 +469,25 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 this.category = category;
                 if (this.category && option.category != null) {
                     this.title = new LiteralText(option.category).formatted(Formatting.BOLD, Formatting.ITALIC);
-                    this.element = null;
                 } else {
                     this.title = option.title;
-                    this.element = option.element;
                 }
 
                 if (this.category) {
                     this.description = null;
                     this.tooltip = null;
+                    this.onClick = null;
+                    this.element = null;
                 } else if (option.tooltipDescription) {
                     this.description = null;
                     this.tooltip = option.description;
+                    this.onClick = option.onClick;
+                    this.element = option.element;
                 } else {
                     this.description = option.description;
                     this.tooltip = null;
+                    this.onClick = option.onClick;
+                    this.element = option.element;
                 }
             }
 
@@ -544,6 +563,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 }
                 if (this.element == null || !this.element.isMouseOver(mouseX, mouseY)) {
                     QueUIConstants.EMPTY_BUTTON.playDownSound(MinecraftClient.getInstance().getSoundManager());
+                    if (this.onClick != null) this.onClick.run();
                 }
                 return super.mouseClicked(mouseX, mouseY, button);
             }
@@ -584,6 +604,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         private Supplier<MutableText> description = null;
         private boolean tooltipDescription = true;
         private Element element = null;
+        private Runnable onClick = null;
 
         public Option(MutableText title) {
             this.title = title;
@@ -618,6 +639,11 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
         public Option setTooltipDescription(boolean tooltipDescription) {
             this.tooltipDescription = tooltipDescription;
+            return this;
+        }
+
+        public Option setOnClick(Runnable onClick) {
+            this.onClick = onClick;
             return this;
         }
     }
