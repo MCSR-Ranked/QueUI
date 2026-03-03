@@ -81,14 +81,14 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         Map<String, List<ListWidget.Entry>> widgetEntries = Maps.newLinkedHashMap();
         for (Option option : this.options) {
             if (option.category != null && !widgetEntries.containsKey(option.category)) {
-                ListWidget.Entry categoryEntry = new ListWidget.Entry(screen, this.entryWidget, option, true);
+                ListWidget.Entry categoryEntry = new ListWidget.Entry(screen, this.entryWidget, option, true, true);
                 widgetEntries.put(option.category, Lists.newArrayList(categoryEntry));
-                categories.add(new ListWidget.Entry(screen, categoryWidget, option, true).setLink(categoryEntry).setEntries(widgetEntries.get(option.category)));
+                categories.add(new ListWidget.Entry(screen, categoryWidget, option, true, false).setLink(categoryEntry).setEntries(widgetEntries.get(option.category)));
             }
             if (option.category == null) {
-                entryList.add(new ListWidget.Entry(screen, this.entryWidget, option, false));
+                entryList.add(new ListWidget.Entry(screen, this.entryWidget, option, false, false));
             } else {
-                widgetEntries.get(option.category).add(new ListWidget.Entry(screen, this.entryWidget, option, false));
+                widgetEntries.get(option.category).add(new ListWidget.Entry(screen, this.entryWidget, option, false, false));
             }
         }
 
@@ -463,12 +463,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             private List<Entry> entries;
             private long lastFocusTime = 0;
 
-            public Entry(QueUIScreen screen, ListWidget parent, Option option, boolean category) {
+            Entry(QueUIScreen screen, ListWidget parent, Option option, boolean category, boolean index) {
                 this.screen = screen;
                 this.parent = parent;
                 this.category = category;
                 if (this.category && option.category != null) {
-                    this.title = new LiteralText(option.category).formatted(Formatting.BOLD, Formatting.ITALIC);
+                    this.title = new LiteralText((index ? "· " : "") + option.category).formatted(index ? Formatting.YELLOW : Formatting.WHITE);
                 } else {
                     this.title = option.title;
                 }
@@ -503,11 +503,11 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             }
 
             public int getTextPadding() {
-                return this.category ? 4 : 8;
+                return this.category ? 4 : 10;
             }
 
             public int getTitleHeight() {
-                return this.category ? 12 : Math.max(24, this.element instanceof AbstractButtonWidget ? ((AbstractButtonWidget) this.element).getHeight() : 0);
+                return this.category ? 16 : Math.max(24, this.element instanceof AbstractButtonWidget ? ((AbstractButtonWidget) this.element).getHeight() : 0);
             }
 
             public int getEntryHeight() {
@@ -517,6 +517,11 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 if (this.isMouseOver(mouseX, mouseY)) this.lastFocusTime = System.currentTimeMillis();
+
+                if (this.category && this.linked == null) {
+                    fill(matrices, x, y, x + entryWidth, y - 1, 0xFF555555);
+                    fill(matrices, x, y + getEntryHeight(), x + entryWidth, y + getEntryHeight() + 1, 0xFF555555);
+                }
 
                 if (this.category && this.entries != null && this.entries.stream().anyMatch(e -> e.rendered)) {
                     this.lastFocusTime = System.currentTimeMillis();
