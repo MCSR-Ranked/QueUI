@@ -36,6 +36,7 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
     public T setToggleUpdater(Supplier<Boolean> toggleGetter, Consumer<Boolean> toggleSetter) {
         this.toggleGetter = toggleGetter;
         this.toggleSetter = toggleSetter;
+        this.updateMessage();
         return (T) this;
     }
 
