@@ -20,6 +20,7 @@
   "mixins": [
     "queui.mixins.json"
   ],
+  "accessWidener": "queui.accesswidener",
   "depends": {
     "minecraft": "${minecraft_version}"
   }
