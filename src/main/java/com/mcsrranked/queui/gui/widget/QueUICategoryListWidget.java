@@ -33,6 +33,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class QueUICategoryListWidget extends AbstractParentElement implements Drawable, TickableElement {
@@ -46,6 +47,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
     private int y;
     private int width;
     private int height;
+    private int tooltipWidth;
     private final int margin;
     private final int groupTabWidth;
     private final Collection<Option> options;
@@ -59,6 +61,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.x = x;
         this.y = y;
         this.width = width;
+        this.setTooltipWidth(this.width / 2);
         this.height = height;
         this.margin = margin;
         this.groupTabWidth = groupTabWidth;
@@ -173,6 +176,14 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
     public int getMargin() {
         return margin;
+    }
+
+    public int getTooltipWidth() {
+        return tooltipWidth;
+    }
+
+    public void setTooltipWidth(int tooltipWidth) {
+        this.tooltipWidth = tooltipWidth;
     }
 
     @Override
@@ -458,6 +469,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             private final ListWidget parent;
             private final boolean category;
             private final Runnable onClick;
+            private final Function<TooltipOverlay.Builder, TooltipOverlay.Builder> tooltipBuilder;
             private boolean rendered = false;
             private Entry linked;
             private List<Entry> entries;
@@ -478,16 +490,19 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     this.tooltip = null;
                     this.onClick = null;
                     this.element = null;
+                    this.tooltipBuilder = null;
                 } else if (option.tooltipDescription) {
                     this.description = null;
                     this.tooltip = option.description;
                     this.onClick = option.onClick;
                     this.element = option.element;
+                    this.tooltipBuilder = option.tooltipBuilder;
                 } else {
                     this.description = option.description;
                     this.tooltip = null;
                     this.onClick = option.onClick;
                     this.element = option.element;
+                    this.tooltipBuilder = null;
                 }
             }
 
@@ -531,11 +546,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 }
 
                 if (isMouseOver(mouseX, mouseY) && this.tooltip != null) {
-                    this.screen.addOverlay(new TooltipOverlay.Builder()
+                    TooltipOverlay.Builder builder = new TooltipOverlay.Builder()
                             .setText(this.tooltip.get())
-                            .setWrapWidth(this.screen.width / 3)
-                            .disableFirstLinePadding()
-                            .build(this.screen));
+                            .setWrapWidth(this.parent.parent.tooltipWidth)
+                            .disableFirstLinePadding();
+                    if (this.tooltipBuilder != null) builder = this.tooltipBuilder.apply(builder);
+                    this.screen.addOverlay(builder.build(this.screen));
                 }
 
                 int textPaddingY = (this.getTitleHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
@@ -610,6 +626,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         private boolean tooltipDescription = true;
         private Element element = null;
         private Runnable onClick = null;
+        private Function<TooltipOverlay.Builder, TooltipOverlay.Builder> tooltipBuilder = null;
 
         public Option(MutableText title) {
             this.title = title;
@@ -649,6 +666,11 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
         public Option setOnClick(Runnable onClick) {
             this.onClick = onClick;
+            return this;
+        }
+
+        public Option setTooltipBuilder(Function<TooltipOverlay.Builder, TooltipOverlay.Builder> tooltipBuilder) {
+            this.tooltipBuilder = tooltipBuilder;
             return this;
         }
     }
