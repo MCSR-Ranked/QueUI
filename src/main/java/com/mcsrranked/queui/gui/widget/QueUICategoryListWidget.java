@@ -63,7 +63,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.margin = margin;
         this.groupTabWidth = groupTabWidth;
         this.options = options;
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.getX() + this.getMargin(), this.getX() + this.getMargin(), 20, 20, LiteralText.EMPTY);
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.getX() + this.getMargin(), this.getY() + this.getMargin(), 20, 20, LiteralText.EMPTY);
         this.searchBox.setMaxLength(100);
         this.searchBox.setChangedListener(this::refreshWidgets);
         this.children.add(this.searchBox);
