@@ -566,7 +566,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 TextUtils.renderScrollText(matrices, this.title, x + this.getTextPadding(), y + textPaddingY, QueUIConstants.WHITE_COLOR, 1, entryWidth - 4 - this.parent.getScrollbarWidth() - this.getElementWidth(), 1.0);
                 int lines = 0;
                 for (StringRenderable text : this.getDescriptionTexts()) {
-                    this.parent.drawTextWithShadow(matrices, this.parent.screen.getTextRenderer(), text, x + this.getTextPadding() + 2, y + textPaddingY + 2 + ((lines++ + 1) * (QueUIConstants.TEXT_HEIGHT + 1)), 0xFFAAAAAA);
+                    this.parent.drawTextWithShadow(matrices, this.parent.screen.getTextRenderer(), text, x + this.getTextPadding() + 2, y + textPaddingY + 2 + ((lines++ + 1) * (QueUIConstants.TEXT_HEIGHT + 1)), QueUIConstants.WHITE_COLOR);
                 }
 
                 if (this.element instanceof Drawable) {
