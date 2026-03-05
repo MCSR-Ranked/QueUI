@@ -596,6 +596,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             }
 
             @Override
+            public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+                if (this.element instanceof AbstractButtonWidget) this.element.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+                return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+            }
+
+            @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
                 if (this.element instanceof Element) this.element.keyPressed(keyCode, scanCode, modifiers);
                 return super.keyPressed(keyCode, scanCode, modifiers);
