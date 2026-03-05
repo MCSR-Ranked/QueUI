@@ -503,18 +503,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     this.onClick = null;
                     this.element = null;
                     this.tooltipBuilder = null;
-                } else if (option.tooltipDescription) {
-                    this.description = null;
-                    this.tooltip = option.description;
+                } else {
+                    this.description = option.description;
+                    this.tooltip = option.tooltip;
                     this.onClick = option.onClick;
                     this.element = option.element;
                     this.tooltipBuilder = option.tooltipBuilder;
-                } else {
-                    this.description = option.description;
-                    this.tooltip = null;
-                    this.onClick = option.onClick;
-                    this.element = option.element;
-                    this.tooltipBuilder = null;
                 }
 
                 if (this.element != null) this.children.add(this.element);
@@ -644,7 +638,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         private String category = null;
         private final MutableText title;
         private Supplier<MutableText> description = null;
-        private boolean tooltipDescription = true;
+        private Supplier<MutableText> tooltip = null;
         private Element element = null;
         private Runnable onClick = null;
         private Function<TooltipOverlay.Builder, TooltipOverlay.Builder> tooltipBuilder = null;
@@ -680,8 +674,16 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             return this;
         }
 
-        public Option setTooltipDescription(boolean tooltipDescription) {
-            this.tooltipDescription = tooltipDescription;
+        public Option setTooltip(String tooltip) {
+            return this.setTooltip(new LiteralText(tooltip));
+        }
+
+        public Option setTooltip(MutableText tooltip) {
+            return this.setTooltip(() -> tooltip);
+        }
+
+        public Option setTooltip(Supplier<MutableText> tooltip) {
+            this.tooltip = tooltip;
             return this;
         }
 
