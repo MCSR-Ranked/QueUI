@@ -14,10 +14,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -218,6 +219,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean result = super.mouseClicked(mouseX, mouseY, button);
         if (this.clearBoxPos != null && button == 0) {
             if (mouseX >= this.clearBoxPos[0] && mouseX < this.clearBoxPos[0] + 20 && mouseY >= this.clearBoxPos[1] && mouseY < this.clearBoxPos[1] + 20) {
                 QueUIConstants.EMPTY_BUTTON.playDownSound(MinecraftClient.getInstance().getSoundManager());
@@ -226,7 +228,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 this.screen.setInitialFocus(this.searchBox);
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return result;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.x <= mouseX && this.x + this.width >= mouseX && this.y <= mouseY && this.y + this.height >= mouseY;
     }
 
     @Override
@@ -234,7 +241,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         return this.children;
     }
 
-    private static class ListWidget extends AlwaysSelectedEntryListWidget<ListWidget.Entry> implements TickableElement {
+    private static class ListWidget extends EntryListWidget<ListWidget.Entry> implements TickableElement {
 
         private final QueUICategoryListWidget parent;
         private final boolean category;
@@ -459,7 +466,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             }
         }
 
-        private static class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> implements TickableElement {
+        private static class Entry extends EntryListWidget.Entry<Entry> implements ParentElement, TickableElement {
 
             private final MutableText title;
             private final Supplier<MutableText> description;
@@ -474,6 +481,9 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             private Entry linked;
             private List<Entry> entries;
             private long lastFocusTime = 0;
+            private boolean dragging;
+            private final List<Element> children = Lists.newArrayList();
+            private @Nullable Element focusedElement;
 
             Entry(QueUIScreen screen, ListWidget parent, Option option, boolean category, boolean index) {
                 this.screen = screen;
@@ -504,6 +514,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     this.element = option.element;
                     this.tooltipBuilder = null;
                 }
+
+                if (this.element != null) this.children.add(this.element);
             }
 
             public List<StringRenderable> getDescriptionTexts() {
@@ -576,8 +588,13 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             }
 
             @Override
+            public List<? extends Element> children() {
+                return this.children;
+            }
+
+            @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (this.element instanceof AbstractButtonWidget) this.element.mouseClicked(mouseX, mouseY, button);
+                boolean result = ParentElement.super.mouseClicked(mouseX, mouseY, button);
                 if (this.category && this.linked != null) {
                     this.parent.parent.entryWidget.ensureVisible(this.linked);
                     this.linked.lastFocusTime = System.currentTimeMillis() + 500;
@@ -586,43 +603,27 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     QueUIConstants.EMPTY_BUTTON.playDownSound(MinecraftClient.getInstance().getSoundManager());
                     if (this.onClick != null) this.onClick.run();
                 }
-                return super.mouseClicked(mouseX, mouseY, button);
+                return result;
             }
 
             @Override
-            public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-                if (this.element instanceof AbstractButtonWidget) this.element.mouseScrolled(mouseX, mouseY, amount);
-                return super.mouseScrolled(mouseX, mouseY, amount);
+            public boolean isDragging() {
+                return this.dragging;
             }
 
             @Override
-            public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-                if (this.element instanceof AbstractButtonWidget) this.element.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-                return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+            public void setDragging(boolean dragging) {
+                this.dragging = dragging;
             }
 
             @Override
-            public boolean mouseReleased(double mouseX, double mouseY, int button) {
-                if (this.element instanceof AbstractButtonWidget) this.element.mouseReleased(mouseX, mouseY, button);
-                return super.mouseReleased(mouseX, mouseY, button);
+            public @Nullable Element getFocused() {
+                return this.focusedElement;
             }
 
             @Override
-            public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-                if (this.element instanceof Element) this.element.keyReleased(keyCode, scanCode, modifiers);
-                return super.keyReleased(keyCode, scanCode, modifiers);
-            }
-
-            @Override
-            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-                if (this.element instanceof Element) this.element.keyPressed(keyCode, scanCode, modifiers);
-                return super.keyPressed(keyCode, scanCode, modifiers);
-            }
-
-            @Override
-            public boolean charTyped(char chr, int keyCode) {
-                if (this.element instanceof Element) this.element.charTyped(chr, keyCode);
-                return super.charTyped(chr, keyCode);
+            public void setFocused(@Nullable Element focused) {
+                this.focusedElement = focused;
             }
 
             public Entry setLink(Entry entry) {

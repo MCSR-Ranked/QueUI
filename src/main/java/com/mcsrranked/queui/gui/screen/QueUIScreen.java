@@ -110,13 +110,13 @@ public class QueUIScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        this.paginationWidget.mouseScrolled(mouseX, mouseY, amount);
+        if (this.paginationWidget.mouseScrolled(mouseX, mouseY, amount)) return true;
         return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        this.paginationWidget.mouseReleased(mouseX, mouseY, button);
+        if (this.paginationWidget.mouseReleased(mouseX, mouseY, button)) return true;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 

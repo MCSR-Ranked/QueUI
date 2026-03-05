@@ -3,10 +3,12 @@ package com.mcsrranked.queui.test;
 import com.google.common.collect.Lists;
 import com.mcsrranked.queui.gui.screen.QueUIScreen;
 import com.mcsrranked.queui.gui.widget.QueUICategoryListWidget;
+import com.mcsrranked.queui.gui.widget.QueUISliderWidget;
 import com.mcsrranked.queui.gui.widget.QueUIToggleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 class GroupListTest {
 
@@ -25,7 +27,9 @@ class GroupListTest {
                 new QueUICategoryListWidget.Option("Test2")
                         .setCategory("Cat2")
                         .setDescription("something testing")
-                        .setTooltipDescription(false),
+                        .setTooltipDescription(false)
+                        .setElement(new QueUISliderWidget<>(0, 0, 60, 20, Double.class)
+                                .setText(value -> Text.of(value.getValueString()))),
                 new QueUICategoryListWidget.Option("Test3")
                         .setCategory("Cat2")
                         .setDescription("something testing")
