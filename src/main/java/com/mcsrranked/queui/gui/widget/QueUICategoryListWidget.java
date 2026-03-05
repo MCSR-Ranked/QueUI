@@ -516,7 +516,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
             public List<StringRenderable> getDescriptionTexts() {
                 if (this.description == null) return Lists.newArrayList();
-                return this.screen.getTextRenderer().wrapLines(this.description.get(), this.parent.width - this.getTextPadding() - 2 - this.getElementWidth());
+                return this.screen.getTextRenderer().wrapLines(this.description.get(), this.parent.width - this.getTextPadding() - this.parent.getScrollbarWidth() - this.getElementWidth());
             }
 
             public int getElementWidth() {
