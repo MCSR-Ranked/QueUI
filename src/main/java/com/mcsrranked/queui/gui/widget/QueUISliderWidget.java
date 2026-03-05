@@ -109,15 +109,26 @@ public class QueUISliderWidget<T extends QueUISliderWidget<T, U>, U extends Numb
         boolean bl = keyCode == GLFW.GLFW_KEY_LEFT;
         if (bl || keyCode == GLFW.GLFW_KEY_RIGHT) {
             float f = bl ? -1.0F : 1.0F;
-            if (this.stepValue > 0) {
-                this.setValue(this.getValue().doubleValue() + (this.stepValue * f));
+            if ((modifiers & (1 << 1)) != 0) {
+                this.setValue(bl ? this.minValue : this.maxValue);
             } else {
-                this.setValue(this.getValue().doubleValue() + f / (this.width - 8));
+                if (this.stepValue > 0) {
+                    this.setValue(this.getValue().doubleValue() + (this.stepValue * f));
+                } else {
+                    this.setValue(this.getValue().doubleValue() + f / (this.width - 8));
+                }
             }
-            super.playDownSound(MinecraftClient.getInstance().getSoundManager());
         }
 
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT) {
+            super.playDownSound(MinecraftClient.getInstance().getSoundManager());
+        }
+        return true;
     }
 
     @Override
