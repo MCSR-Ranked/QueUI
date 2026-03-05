@@ -151,6 +151,18 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     }
 
     @SuppressWarnings("unchecked")
+    public T setActive(boolean active) {
+        this.active = active;
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setVisible(boolean visible) {
+        this.visible = visible;
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onPress() {
         if (this.pressAction != null) this.pressAction.accept((T) this);
