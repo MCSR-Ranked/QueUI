@@ -102,7 +102,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         for (ListWidget.Entry entry : Lists.newArrayList(entryList)) {
             String trimTitle = entry.title.getString().toLowerCase(Locale.ROOT).trim();
             String trimDesc = entry.description == null ? null : entry.description.get().getString().toLowerCase(Locale.ROOT).trim();
-            if (!trimTitle.contains(keyword) && !(trimDesc != null && trimDesc.contains(keyword)))
+            String trimTooltip = entry.tooltip == null ? null : entry.tooltip.get().getString().toLowerCase(Locale.ROOT).trim();
+            if (!trimTitle.contains(keyword) && !(trimDesc != null && trimDesc.contains(keyword)) && !(trimTooltip != null && trimTooltip.contains(keyword)))
                 entryList.remove(entry);
         }
 
@@ -114,7 +115,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     String lowCat = mapEntry.getKey() == null ? null : mapEntry.getKey().toLowerCase(Locale.ROOT).trim();
                     String trimTitle = widgetEntry.title.getString().toLowerCase(Locale.ROOT).trim();
                     String trimDesc = widgetEntry.description == null ? null : widgetEntry.description.get().getString().toLowerCase(Locale.ROOT).trim();
-                    if ((lowCat != null && lowCat.contains(keyword)) || trimTitle.contains(keyword) || (trimDesc != null && trimDesc.contains(keyword)))
+                    String trimTooltip = widgetEntry.tooltip == null ? null : widgetEntry.tooltip.get().getString().toLowerCase(Locale.ROOT).trim();
+                    if ((lowCat != null && lowCat.contains(keyword)) || trimTitle.contains(keyword) || (trimDesc != null && trimDesc.contains(keyword)) || (trimTooltip != null && trimTooltip.contains(keyword)))
                         entryList.add(widgetEntry);
                 }
             }
