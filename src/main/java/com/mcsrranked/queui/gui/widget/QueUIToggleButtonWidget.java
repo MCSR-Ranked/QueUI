@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 
 public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> extends QueUIButtonWidget<T> {
 
-    private static final int ON_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 0, 255, 0);
-    private static final int OFF_COLOR = BackgroundHelper.ColorMixer.getArgb(220, 255, 0, 0);
+    private static final int ON_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 20, 214, 20);
+    private static final int OFF_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 220, 38, 38);
 
     private Supplier<Text> textOnUpdater;
     private Supplier<Text> textOffUpdater;
@@ -116,7 +116,7 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
         } else {
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
-            int div = this.getWidth() / (this.isToggle() ? 4 : 3);
+            int div = 3;
             fill(matrices, this.x + div, this.y + this.getHeight() - 3, this.x + this.getWidth() - div, this.y + this.getHeight() - 1, color);
         }
     }
