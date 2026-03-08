@@ -4,8 +4,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -13,20 +15,24 @@ import java.util.function.Supplier;
 
 public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> extends QueUIButtonWidget<T> {
 
+    public enum DecorationType { NONE, FULL_BORDER, UNDER_BORDER }
+
     private static final int ON_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 20, 214, 20);
     private static final int OFF_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 220, 38, 38);
+    public static final MutableText ON_TEXT = new TranslatableText("options.on").formatted(Formatting.GREEN);
+    public static final MutableText OFF_TEXT = new TranslatableText("options.off").styled(style -> style.withItalic(true).withColor(Formatting.RED));
 
     private Supplier<Text> textOnUpdater;
     private Supplier<Text> textOffUpdater;
     private Supplier<Boolean> toggleGetter;
     private Consumer<Boolean> toggleSetter;
     private boolean toggle = false;
-    private boolean fullBordered = true;
+    private DecorationType decorationType = DecorationType.NONE;
 
     public QueUIToggleButtonWidget(int x, int y, int width, int height) {
         super(x, y, width, height, false);
-        this.textOnUpdater = () -> new TranslatableText("options.on");
-        this.textOffUpdater = () -> new TranslatableText("options.off");
+        this.textOnUpdater = () -> ON_TEXT;
+        this.textOffUpdater = () -> OFF_TEXT;
         this.toggleGetter = () -> this.toggle;
         this.toggleSetter = (bool) -> this.toggle = bool;
         this.updateMessage();
@@ -61,8 +67,8 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
     }
 
     @SuppressWarnings("unchecked")
-    public T setFullBordered(boolean fullBordered) {
-        this.fullBordered = fullBordered;
+    public T setDecorationType(DecorationType decorationType) {
+        this.decorationType = decorationType;
         return (T) this;
     }
 
@@ -90,8 +96,8 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
         this.getToggleSetter().accept(toggle);
     }
 
-    public boolean isFullBordered() {
-        return fullBordered;
+    public DecorationType getDecorationType() {
+        return decorationType;
     }
 
     @Override
@@ -108,13 +114,13 @@ public class QueUIToggleButtonWidget<T extends QueUIToggleButtonWidget<T>> exten
     @Override
     protected void renderSelectionMark(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
         int color = this.isToggle() ? ON_COLOR : OFF_COLOR;
-        if (this.isFullBordered()) {
+        if (this.getDecorationType() == DecorationType.FULL_BORDER) {
             fill(matrices, this.x + 1, this.y + 1, this.x + this.getWidth() - 1, this.y + 3, color);
             fill(matrices, this.x + 1, this.y + 3, this.x + 3, this.y + this.getHeight() - 1, color);
             fill(matrices, this.x + this.getWidth() - 3, this.y + 1, this.x + this.getWidth() - 1, this.y + this.getHeight() - 1, color);
             fill(matrices, this.x + 1, this.y + this.getHeight() - 3, this.x + this.getWidth() - 1, this.y + this.getHeight() - 1, color);
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
-        } else {
+        } else if (this.getDecorationType() == DecorationType.UNDER_BORDER) {
             super.renderSelectionMark(matrices, client, mouseX, mouseY);
             int div = 3;
             fill(matrices, this.x + div, this.y + this.getHeight() - 3, this.x + this.getWidth() - div, this.y + this.getHeight() - 1, color);

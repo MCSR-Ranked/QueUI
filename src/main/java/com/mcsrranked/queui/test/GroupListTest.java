@@ -38,8 +38,7 @@ class GroupListTest {
                 new QueUICategoryListWidget.Option("BUTTON TEST")
                         .setCategory("Cat2")
                         .setTooltip("something testing")
-                        .setElement(new QueUIToggleButtonWidget<>(0, 0, 40, 20)
-                                .setOnOffMessage("ON", "OFF")),
+                        .setElement(new QueUIToggleButtonWidget<>(0, 0, 40, 20)),
                 new QueUICategoryListWidget.Option("Test4")
                         .setCategory("Cat3")
                         .setDescription("something testing"),
@@ -55,8 +54,7 @@ class GroupListTest {
                 new QueUICategoryListWidget.Option("Test2")
                         .setCategory("Cat2")
                         .setDescription("something testing")
-                        .setElement(new QueUIToggleButtonWidget<>(0, 0, 40, 20)
-                                .setOnOffMessage("ON", "OFF")),
+                        .setElement(new QueUIToggleButtonWidget<>(0, 0, 40, 20)),
                 new QueUICategoryListWidget.Option("Test3")
                         .setCategory("Cat2")
                         .setDescription("something testing"),
