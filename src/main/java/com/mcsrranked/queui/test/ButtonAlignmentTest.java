@@ -17,22 +17,27 @@ class ButtonAlignmentTest {
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(10, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.LEFT, 4)
                 .setText(text)
+                .setOnPress(button -> button.active = false)
         );
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(80, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.CENTER, 4)
                 .setText(text)
+                .setOnPress(button -> button.active = false)
         );
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(150, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.RIGHT, 4)
                 .setText(text)
+                .setOnPress(button -> button.active = false)
         );
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(220, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.TOP, 4)
                 .setText(text)
+                .setOnPress(button -> button.active = false)
         );
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(290, 10, 60, 30)
                 .setContentAlignment(AlignmentDirection.BOTTOM, 4)
                 .setText(text)
+                .setOnPress(button -> button.active = false)
         );
 
         screen.getPagination().addElement(page, new QueUIButtonWidget<>(10, 50, 60, 80)

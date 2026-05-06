@@ -243,7 +243,7 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
     @SuppressWarnings("deprecation")
     public void renderContents(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
         TextRenderer textRenderer = client.textRenderer;
-        int textColor = this.active ? this.messageColor : 0xA0A0A0;
+        int textColor = this.active ? this.messageColor : 0xFFA0A0A0;
 
         matrices.push();
         RenderSystem.enableBlend();
