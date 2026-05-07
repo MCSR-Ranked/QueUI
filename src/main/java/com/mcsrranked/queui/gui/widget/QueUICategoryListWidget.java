@@ -83,8 +83,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.refreshWidgets();
     }
 
-    private void refreshWidgets() {
-        this.refreshWidgets("");
+    public void refreshWidgets() {
+        this.refreshWidgets(this.searchBox.getText());
     }
 
     private void refreshWidgets(String keyword) {
