@@ -51,12 +51,16 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
     private int tooltipWidth;
     private final int margin;
     private final int groupTabWidth;
-    private final Collection<Option> options;
+    private final List<Option> options;
     private boolean visible = true;
     private int[] clearBoxPos = null;
     private final List<Element> children = Lists.newArrayList();
 
-    public QueUICategoryListWidget(QueUIScreen screen, int x, int y, int width, int height, int margin, int groupTabWidth, Collection<Option> options) {
+    public QueUICategoryListWidget(QueUIScreen screen, int x, int y, int width, int height, int margin, int groupTabWidth) {
+        this(screen, x, y, width, height, margin, groupTabWidth, new ArrayList<>());
+    }
+
+    public QueUICategoryListWidget(QueUIScreen screen, int x, int y, int width, int height, int margin, int groupTabWidth, List<Option> options) {
         this.screen = screen;
         this.textRenderer = screen.getClient().textRenderer;
         this.x = x;
@@ -137,6 +141,10 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.entryWidget.scroll(0);
     }
 
+    public List<Option> getOptions() {
+        return options;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -194,7 +202,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         if (!this.isVisible()) return;
 
         boolean hasSearchText = !this.searchBox.getText().isEmpty();
-        this.searchBox.setWidth(this.getWidth() - this.searchBox.x - this.getMargin() - (hasSearchText ? (this.searchBox.getHeight() + 2) : 0));
+        this.searchBox.setWidth(this.getWidth() - (this.searchBox.x - this.x) - this.getMargin() - (hasSearchText ? (this.searchBox.getHeight() + 2) : 0));
         this.searchBox.setSuggestion(hasSearchText ? "" : I18n.translate("gui.recipebook.search_hint"));
         fill(matrices, this.searchBox.x, this.searchBox.y, this.searchBox.x + this.searchBox.getWidth(), this.searchBox.y + this.searchBox.getHeight(), 0x66000000);
 
