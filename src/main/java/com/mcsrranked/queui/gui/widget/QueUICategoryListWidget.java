@@ -76,8 +76,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.searchBox.setChangedListener(this::refreshWidgets);
         this.children.add(this.searchBox);
 
-        this.categoryWidget = new ListWidget(this, this.searchBox.x, this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), groupTabWidth, height - 40, true);
-        this.entryWidget = new ListWidget(this, this.searchBox.x + groupTabWidth + this.getMargin(), this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), width - groupTabWidth - (this.getMargin() * 2) - (groupTabWidth > 0 ? this.getMargin() : 0), height - 40, false);
+        this.categoryWidget = new ListWidget(this, this.searchBox.x, this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), this.groupTabWidth, height - 40, true);
+        this.entryWidget = new ListWidget(this, this.searchBox.x + (this.groupTabWidth > 0 ? this.groupTabWidth + this.getMargin() : 0), this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), width - this.groupTabWidth - (this.getMargin() * (this.groupTabWidth > 0 ? 3 : 2)), height - 40, false);
         if (this.groupTabWidth > 0) this.children.add(this.categoryWidget);
         this.children.add(entryWidget);
         this.refreshWidgets("");
