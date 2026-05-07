@@ -77,7 +77,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.children.add(this.searchBox);
 
         this.categoryWidget = new ListWidget(this, this.searchBox.x, this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), groupTabWidth, height - 40, true);
-        this.entryWidget = new ListWidget(this, this.searchBox.x + groupTabWidth + this.getMargin(), this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), width - groupTabWidth - (this.getMargin() * 3), height - 40, false);
+        this.entryWidget = new ListWidget(this, this.searchBox.x + groupTabWidth + this.getMargin(), this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), width - groupTabWidth - (this.getMargin() * 2) - (groupTabWidth > 0 ? getMargin() : 0), height - 40, false);
         if (this.groupTabWidth > 0) this.children.add(this.categoryWidget);
         this.children.add(entryWidget);
         this.refreshWidgets("");
