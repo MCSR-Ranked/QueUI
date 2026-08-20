@@ -4,6 +4,8 @@ import com.mcsrranked.queui.QueUI;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.type.AlignmentDirection;
 import com.mcsrranked.queui.utils.ColorUtils;
+import com.mcsrranked.queui.utils.MouseUtils;
+import com.mcsrranked.queui.utils.PixelUtils;
 import com.mcsrranked.queui.utils.TextUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -196,6 +198,11 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        double guiMouseX = MouseUtils.getGuiX();
+        double guiMouseY = MouseUtils.getGuiY();
+        this.hovered = guiMouseX >= this.x && guiMouseY >= this.y && guiMouseX < this.x + this.getWidth() && guiMouseY < this.y + this.getHeight();
+        this.updateMessage();
+
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         matrices.push();
         matrices.translate(this.renderOffset[0], this.renderOffset[1], 0);
@@ -355,11 +362,13 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
 
     @Override
     public void setWidgetPosition(float x, float y, boolean updatePosition) {
+        float snappedX = (float) PixelUtils.snapToPhysicalPixel(x);
+        float snappedY = (float) PixelUtils.snapToPhysicalPixel(y);
         if (updatePosition) {
-            this.x = (int) x;
-            this.y = (int) y;
+            this.x = (int) snappedX;
+            this.y = (int) snappedY;
         }
-        this.renderOffset = new float[] { x - this.x, y - this.y };
+        this.renderOffset = new float[] { snappedX - this.x, snappedY - this.y };
     }
 
     public interface RenderSupplier<T extends QueUIButtonWidget<T>> {
@@ -375,6 +384,6 @@ public class QueUIButtonWidget<T extends QueUIButtonWidget<T>> extends AbstractP
         Vector4f vector = new Vector4f(0, 0, 0, 1);
         vector.transform(model);
 
-        return new Pair<>((int) vector.getX(), (int) vector.getY());
+        return new Pair<>(Math.round(vector.getX()), Math.round(vector.getY()));
     }
 }

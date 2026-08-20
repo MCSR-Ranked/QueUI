@@ -3,6 +3,8 @@ package com.mcsrranked.queui.gui.overlay;
 import com.google.common.collect.Lists;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.gui.screen.QueUIScreen;
+import com.mcsrranked.queui.utils.MouseUtils;
+import com.mcsrranked.queui.utils.PixelUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.*;
@@ -39,8 +41,12 @@ public class TooltipOverlay implements QueUIOverlay {
             maxTextWidth = Math.max(maxTextWidth, screen.getTextRenderer().getWidth(stringRenderable));
         }
 
-        int x = this.tooltipX != null ? this.tooltipX : mouseX;
-        int y = this.tooltipY != null ? this.tooltipY : mouseY;
+        double preciseX = this.tooltipX != null ? this.tooltipX : PixelUtils.snapToPhysicalPixel(MouseUtils.getGuiX());
+        double preciseY = this.tooltipY != null ? this.tooltipY : PixelUtils.snapToPhysicalPixel(MouseUtils.getGuiY());
+        int x = (int) preciseX;
+        int y = (int) preciseY;
+        double offsetX = preciseX - x;
+        double offsetY = preciseY - y;
 
         int paddingWidth = 12;
         int topLeft = x + paddingWidth;
@@ -53,11 +59,15 @@ public class TooltipOverlay implements QueUIOverlay {
 
         if (topLeft + maxTextWidth > screen.width) {
             topLeft = x - maxTextWidth - paddingWidth;
-            topLeft = Math.max(topLeft, paddingWidth);
+            if (topLeft < paddingWidth) {
+                topLeft = paddingWidth;
+                offsetX = 0;
+            }
         }
 
         if (bottomRight + textsHeight + 6 > screen.height) {
             bottomRight = screen.height - textsHeight - 6;
+            offsetY = 0;
         }
 
         int backgroundColor = 0xF0100010;
@@ -66,6 +76,7 @@ public class TooltipOverlay implements QueUIOverlay {
         int zLayer = 400;
 
         matrices.push();
+        matrices.translate(offsetX, offsetY, 0);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);

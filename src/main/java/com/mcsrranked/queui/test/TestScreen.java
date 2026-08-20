@@ -28,8 +28,6 @@ public class TestScreen extends QueUIScreen {
         TooltipTest.init(this);
         ButtonAlignmentTest.init(this, 5, true);
         GroupListTest.init(this);
-
-        this.getPagination().setPage(6);
     }
 
     @Override
