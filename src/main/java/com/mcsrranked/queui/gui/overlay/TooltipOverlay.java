@@ -45,8 +45,6 @@ public class TooltipOverlay implements QueUIOverlay {
         double preciseY = this.tooltipY != null ? this.tooltipY : PixelUtils.snapToPhysicalPixel(MouseUtils.getGuiY());
         int x = (int) preciseX;
         int y = (int) preciseY;
-        double offsetX = preciseX - x;
-        double offsetY = preciseY - y;
 
         int paddingWidth = 12;
         int topLeft = x + paddingWidth;
@@ -61,13 +59,13 @@ public class TooltipOverlay implements QueUIOverlay {
             topLeft = x - maxTextWidth - paddingWidth;
             if (topLeft < paddingWidth) {
                 topLeft = paddingWidth;
-                offsetX = 0;
+                preciseX = x;
             }
         }
 
         if (bottomRight + textsHeight + 6 > screen.height) {
             bottomRight = screen.height - textsHeight - 6;
-            offsetY = 0;
+            preciseY = y;
         }
 
         int backgroundColor = 0xF0100010;
@@ -76,7 +74,7 @@ public class TooltipOverlay implements QueUIOverlay {
         int zLayer = 400;
 
         matrices.push();
-        matrices.translate(offsetX, offsetY, 0);
+        matrices.translate(preciseX - x, preciseY - y, 0);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
