@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.mcsrranked.queui.gui.QueUIConstants;
 import com.mcsrranked.queui.gui.overlay.TooltipOverlay;
 import com.mcsrranked.queui.gui.screen.QueUIScreen;
+import com.mcsrranked.queui.utils.MouseUtils;
+import com.mcsrranked.queui.utils.PixelUtils;
 import com.mcsrranked.queui.utils.ScissorStack;
 import com.mcsrranked.queui.utils.TextUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -406,7 +408,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 int scrollbarEndX = scrollbarX + this.getScrollbarWidth();
                 int p = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / this.getMaxPosition());
                 p = MathHelper.clamp(p, 32, this.bottom - this.top - 8);
-                int q = (int)this.getScrollAmount() * (this.bottom - this.top - p) / o + this.top;
+                double q = PixelUtils.snapToPhysicalPixel(this.getScrollAmount() * (this.bottom - this.top - p) / (double) o + this.top);
                 if (q < this.top) {
                     q = this.top;
                 }
@@ -551,7 +553,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                if (this.isMouseOver(mouseX, mouseY)) this.lastFocusTime = System.currentTimeMillis();
+                boolean mouseOver = this.isMouseOver(MouseUtils.getGuiX(), MouseUtils.getGuiY());
+                if (mouseOver) this.lastFocusTime = System.currentTimeMillis();
 
                 if (this.category && this.linked == null) {
                     fill(matrices, x, y, x + entryWidth, y - 1, 0xFF555555);
@@ -565,7 +568,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                     fill(matrices, x, y, x + entryWidth, y + this.getEntryHeight(), BackgroundHelper.ColorMixer.getArgb((int) (((200 - (System.currentTimeMillis() - this.lastFocusTime)) / 200f) * 40), 255, 255, 255));
                 }
 
-                if (isMouseOver(mouseX, mouseY) && this.tooltip != null) {
+                if (mouseOver && this.tooltip != null) {
                     TooltipOverlay.Builder builder = new TooltipOverlay.Builder()
                             .setText(this.tooltip.get())
                             .setWrapWidth(this.parent.parent.tooltipWidth)

@@ -1,5 +1,6 @@
 package com.mcsrranked.queui.gui.widget;
 
+import com.mcsrranked.queui.utils.PixelUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -153,12 +154,17 @@ public class QueUISliderWidget<T extends QueUISliderWidget<T, U>, U extends Numb
 
         int hoverOffset = (this.isHovered() ? 2 : 1) * 20;
         double targetValue = this.getValue().doubleValue();
-        int sliderOffset = (int) (((targetValue - this.minValue) / (this.maxValue - this.minValue)) * (this.getWidth() - 8));
+        double preciseOffset = PixelUtils.snapToPhysicalPixel(((targetValue - this.minValue) / (this.maxValue - this.minValue)) * (this.getWidth() - 8));
+        int sliderOffset = (int) preciseOffset;
+
+        matrices.push();
+        matrices.translate(preciseOffset - sliderOffset, 0, 0);
         this.drawTexture(matrices, this.x + sliderOffset, this.y, 0, 46 + hoverOffset, 4, 3);
         this.drawTexture(matrices, this.x + sliderOffset + 4, this.y, 196, 46 + hoverOffset, 4, 3);
         this.drawTexture(matrices, this.x + sliderOffset, this.y + this.getHeight() - 3, 0, 63 + hoverOffset, 4, 3);
         this.drawTexture(matrices, this.x + sliderOffset + 4, this.y + this.getHeight() - 3, 196, 63 + hoverOffset, 4, 3);
         drawTexture(matrices, this.x + sliderOffset + 1, this.y + 3, 3, this.getHeight() - 6, 0, 50 + hoverOffset, 3, 1, 256, 256);
         drawTexture(matrices, this.x + sliderOffset + 4, this.y + 3, 3, this.getHeight() - 6, 197, 50 + hoverOffset, 3, 1, 256, 256);
+        matrices.pop();
     }
 }

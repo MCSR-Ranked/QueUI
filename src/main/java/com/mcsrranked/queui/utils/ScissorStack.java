@@ -28,10 +28,10 @@ public class ScissorStack {
         float transformedX = vector.getX();
         float transformedY = vector.getY();
 
-        int sx = (int) (transformedX * scale);
-        int sy = fbHeight - (int) ((transformedY + height) * scale);
-        int sw = (int) (width * scale);
-        int sh = (int) (height * scale);
+        int sx = (int) Math.round(transformedX * scale);
+        int sy = fbHeight - (int) Math.round((transformedY + height) * scale);
+        int sw = (int) Math.round((transformedX + width) * scale) - sx;
+        int sh = fbHeight - (int) Math.round(transformedY * scale) - sy;
 
         if (!STACK.isEmpty()) {
             int[] prev = STACK.peek();
