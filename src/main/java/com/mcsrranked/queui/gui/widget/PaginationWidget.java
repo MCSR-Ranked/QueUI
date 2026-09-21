@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -122,15 +121,5 @@ public class PaginationWidget extends AbstractParentElement implements Drawable,
                 ((TextFieldWidget) element).tick();
             }
         }
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        for (Element element : this.getElementsInCurrentPage()) {
-            if (element instanceof ParentElement) {
-                element.mouseScrolled(mouseX, mouseY, amount);
-            }
-        }
-        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 }
