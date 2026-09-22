@@ -28,6 +28,7 @@ public class TestScreen extends QueUIScreen {
         TooltipTest.init(this);
         ButtonAlignmentTest.init(this, 5, true);
         GroupListTest.init(this);
+        TabListTest.init(this);
     }
 
     @Override

@@ -54,6 +54,11 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
     private final int margin;
     private final int groupTabWidth;
     private final List<Option> options;
+    private final boolean searchable;
+    private Formatting categoryColor = Formatting.YELLOW;
+    private String categoryPrefix = "· ";
+    private int categorySpacing = 0;
+    private @Nullable String selectedCategory = null;
     private boolean visible = true;
     private int[] clearBoxPos = null;
     private final List<Element> children = Lists.newArrayList();
@@ -63,6 +68,10 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
     }
 
     public QueUICategoryListWidget(QueUIScreen screen, int x, int y, int width, int height, int margin, int groupTabWidth, List<Option> options) {
+        this(screen, x, y, width, height, margin, groupTabWidth, options, true);
+    }
+
+    public QueUICategoryListWidget(QueUIScreen screen, int x, int y, int width, int height, int margin, int groupTabWidth, List<Option> options, boolean searchable) {
         this.screen = screen;
         this.textRenderer = screen.getClient().textRenderer;
         this.x = x;
@@ -73,13 +82,16 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         this.margin = margin;
         this.groupTabWidth = groupTabWidth;
         this.options = options;
+        this.searchable = searchable;
         this.searchBox = new TextFieldWidget(this.textRenderer, this.getX() + this.getMargin(), this.getY() + this.getMargin(), 20, 20, LiteralText.EMPTY);
         this.searchBox.setMaxLength(100);
         this.searchBox.setChangedListener(this::refreshWidgets);
-        this.children.add(this.searchBox);
+        if (this.searchable) this.children.add(this.searchBox);
 
-        this.categoryWidget = new ListWidget(this, this.searchBox.x, this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), this.groupTabWidth, height - 40, true);
-        this.entryWidget = new ListWidget(this, this.searchBox.x + (this.groupTabWidth > 0 ? this.groupTabWidth + this.getMargin() : 0), this.searchBox.y + this.searchBox.getHeight() + this.getMargin(), width - this.groupTabWidth - (this.getMargin() * (this.groupTabWidth > 0 ? 3 : 2)), height - 40, false);
+        int listY = this.searchable ? this.searchBox.y + this.searchBox.getHeight() + this.getMargin() : this.getY() + this.getMargin();
+        int listHeight = this.searchable ? height - 40 : height - 40 + this.searchBox.getHeight() + this.getMargin();
+        this.categoryWidget = new ListWidget(this, this.searchBox.x, listY, this.groupTabWidth, listHeight, true);
+        this.entryWidget = new ListWidget(this, this.searchBox.x + (this.groupTabWidth > 0 ? this.groupTabWidth + this.getMargin() : 0), listY, width - this.groupTabWidth - (this.getMargin() * (this.groupTabWidth > 0 ? 3 : 2)), listHeight, false);
         if (this.groupTabWidth > 0) this.children.add(this.categoryWidget);
         this.children.add(entryWidget);
         this.refreshWidgets();
@@ -140,11 +152,51 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         }
 
         if (this.groupTabWidth > 0) {
+            boolean selectionVisible = false;
+            for (ListWidget.Entry category : categories) {
+                if (category.group.equals(this.selectedCategory)) selectionVisible = true;
+            }
+            if (!selectionVisible) this.selectedCategory = categories.isEmpty() ? null : categories.get(0).group;
+            entryList.removeIf(entry -> entry.category || (entry.group != null && !entry.group.equals(this.selectedCategory)));
+        }
+
+        for (ListWidget.Entry entry : entryList) {
+            entry.spaced = entry.category && entry != entryList.get(0);
+        }
+
+        if (this.groupTabWidth > 0) {
             this.categoryWidget.updateEntry(categories);
             this.categoryWidget.scroll(0);
         }
         this.entryWidget.updateEntry(entryList);
         this.entryWidget.scroll(0);
+    }
+
+    public QueUICategoryListWidget setCategoryStyle(Formatting color, String prefix) {
+        this.categoryColor = color;
+        this.categoryPrefix = prefix;
+        this.refreshWidgets();
+        return this;
+    }
+
+    public QueUICategoryListWidget setCategorySpacing(int categorySpacing) {
+        this.categorySpacing = categorySpacing;
+        this.refreshWidgets();
+        return this;
+    }
+
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    public @Nullable String getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    public QueUICategoryListWidget setSelectedCategory(@Nullable String selectedCategory) {
+        this.selectedCategory = selectedCategory;
+        this.refreshWidgets();
+        return this;
     }
 
     public List<Option> getOptions() {
@@ -207,10 +259,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (!this.isVisible()) return;
 
-        boolean hasSearchText = !this.searchBox.getText().isEmpty();
-        this.searchBox.setWidth(this.getWidth() - (this.searchBox.x - this.x) - this.getMargin() - (hasSearchText ? (this.searchBox.getHeight() + 2) : 0));
-        this.searchBox.setSuggestion(hasSearchText ? "" : I18n.translate("gui.recipebook.search_hint"));
-        fill(matrices, this.searchBox.x, this.searchBox.y, this.searchBox.x + this.searchBox.getWidth(), this.searchBox.y + this.searchBox.getHeight(), 0x66000000);
+        boolean hasSearchText = this.searchable && !this.searchBox.getText().isEmpty();
+        if (this.searchable) {
+            this.searchBox.setWidth(this.getWidth() - (this.searchBox.x - this.x) - this.getMargin() - (hasSearchText ? (this.searchBox.getHeight() + 2) : 0));
+            this.searchBox.setSuggestion(hasSearchText ? "" : I18n.translate("gui.recipebook.search_hint"));
+            fill(matrices, this.searchBox.x, this.searchBox.y, this.searchBox.x + this.searchBox.getWidth(), this.searchBox.y + this.searchBox.getHeight(), 0x66000000);
+        }
 
         for (Element child : this.children) {
             if (child instanceof Drawable) ((Drawable) child).render(matrices, mouseX, mouseY, delta);
@@ -230,7 +284,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
         for (Element child : this.children) {
             if (child instanceof TickableElement) ((TickableElement) child).tick();
         }
-        this.searchBox.tick();
+        if (this.searchable) this.searchBox.tick();
     }
 
     @Override
@@ -362,7 +416,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
 
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-            this.setScrollAmount(this.getScrollAmount() - amount * (this.category ? 10 : 25));
+            this.setScrollAmount(this.getScrollAmount() - amount * (this.category ? 20 : 50));
             return true;
         }
 
@@ -445,9 +499,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             for (int j = 0; j < i; j++) {
                 int k = this.getRowTop(j);
                 int l = this.getRowBottom(j);
-                this.getEntry(j).rendered = false;
                 if (l >= this.top && k <= this.bottom) {
-                    this.getEntry(j).rendered = true;
                     int m = y + this.getRowHeight(j) + this.headerHeight;
                     int n = this.getEntry(j).getEntryHeight() - 4;
                     Entry entry = this.getEntry(j);
@@ -491,9 +543,10 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             private final QueUIScreen screen;
             private final ListWidget parent;
             private final boolean category;
+            private final @Nullable String group;
             private final Runnable onClick;
             private final Function<TooltipOverlay.Builder, TooltipOverlay.Builder> tooltipBuilder;
-            private boolean rendered = false;
+            private boolean spaced = false;
             private Entry linked;
             private List<Entry> entries;
             private long lastFocusTime = 0;
@@ -505,8 +558,9 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 this.screen = screen;
                 this.parent = parent;
                 this.category = category;
+                this.group = option.category;
                 if (this.category && option.category != null) {
-                    this.title = new LiteralText((index ? "· " : "") + option.category).formatted(index ? Formatting.YELLOW : Formatting.WHITE);
+                    this.title = new LiteralText((index ? parent.parent.categoryPrefix : "") + option.category).formatted(index ? parent.parent.categoryColor : Formatting.WHITE);
                 } else {
                     this.title = option.title;
                 }
@@ -547,8 +601,12 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 return this.category ? 16 : Math.max(24, this.element instanceof AbstractButtonWidget ? ((AbstractButtonWidget) this.element).getHeight() : 0);
             }
 
+            public int getSpacing() {
+                return this.spaced ? this.parent.parent.categorySpacing : 0;
+            }
+
             public int getEntryHeight() {
-                return this.getTitleHeight() + (this.description == null ? 0 : (2 + this.getDescriptionTexts().size() * 9));
+                return this.getSpacing() + this.getTitleHeight() + (this.description == null ? 0 : (2 + this.getDescriptionTexts().size() * 9));
             }
 
             @Override
@@ -556,16 +614,20 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 boolean mouseOver = this.isMouseOver(MouseUtils.getGuiX(), MouseUtils.getGuiY());
                 if (mouseOver) this.lastFocusTime = System.currentTimeMillis();
 
+                y += this.getSpacing();
+                int contentHeight = this.getEntryHeight() - this.getSpacing();
+
                 if (this.category && this.linked == null) {
                     fill(matrices, x, y, x + entryWidth, y - 1, 0xFF555555);
-                    fill(matrices, x, y + getEntryHeight(), x + entryWidth, y + getEntryHeight() + 1, 0xFF555555);
+                    fill(matrices, x, y + contentHeight, x + entryWidth, y + contentHeight + 1, 0xFF555555);
                 }
 
-                if (this.category && this.entries != null && this.entries.stream().anyMatch(e -> e.rendered)) {
-                    this.lastFocusTime = System.currentTimeMillis();
-                }
-                if (System.currentTimeMillis() - this.lastFocusTime < 200) {
-                    fill(matrices, x, y, x + entryWidth, y + this.getEntryHeight(), BackgroundHelper.ColorMixer.getArgb((int) (((200 - (System.currentTimeMillis() - this.lastFocusTime)) / 200f) * 40), 255, 255, 255));
+                boolean selectedTab = this.category && this.linked != null && this.group.equals(this.parent.parent.selectedCategory);
+                if (selectedTab) {
+                    fill(matrices, x, y, x + entryWidth, y + contentHeight, BackgroundHelper.ColorMixer.getArgb(70, 255, 255, 255));
+                    fill(matrices, x, y, x + 2, y + contentHeight, QueUIConstants.WHITE_COLOR);
+                } else if (System.currentTimeMillis() - this.lastFocusTime < 200) {
+                    fill(matrices, x, y, x + entryWidth, y + contentHeight, BackgroundHelper.ColorMixer.getArgb((int) (((200 - (System.currentTimeMillis() - this.lastFocusTime)) / 200f) * 40), 255, 255, 255));
                 }
 
                 if (mouseOver && this.tooltip != null) {
@@ -578,7 +640,8 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
                 }
 
                 int textPaddingY = (this.getTitleHeight() - QueUIConstants.TEXT_HEIGHT) / 2;
-                TextUtils.renderScrollText(matrices, this.title, x + this.getTextPadding(), y + textPaddingY, QueUIConstants.WHITE_COLOR, 1, entryWidth - 4 - this.parent.getScrollbarWidth() - this.getElementWidth(), 1.0);
+                int selectedOffset = selectedTab ? 2 : 0;
+                TextUtils.renderScrollText(matrices, this.title, x + this.getTextPadding() + selectedOffset, y + textPaddingY, QueUIConstants.WHITE_COLOR, 1, entryWidth - 4 - selectedOffset - this.parent.getScrollbarWidth() - this.getElementWidth(), 1.0);
                 int lines = 0;
                 for (StringRenderable text : this.getDescriptionTexts()) {
                     this.parent.drawTextWithShadow(matrices, this.parent.screen.getTextRenderer(), text, x + this.getTextPadding() + 2, y + textPaddingY + 2 + ((lines++ + 1) * (QueUIConstants.TEXT_HEIGHT + 1)), QueUIConstants.WHITE_COLOR);
@@ -607,8 +670,7 @@ public class QueUICategoryListWidget extends AbstractParentElement implements Dr
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 boolean result = ParentElement.super.mouseClicked(mouseX, mouseY, button);
                 if (this.category && this.linked != null) {
-                    this.parent.parent.entryWidget.ensureVisible(this.linked);
-                    this.linked.lastFocusTime = System.currentTimeMillis() + 500;
+                    this.parent.parent.setSelectedCategory(this.group);
                 }
                 if (this.element == null || !this.element.isMouseOver(mouseX, mouseY)) {
                     QueUIConstants.EMPTY_BUTTON.playDownSound(MinecraftClient.getInstance().getSoundManager());
